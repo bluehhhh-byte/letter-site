@@ -2,9 +2,15 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#07070d" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>그리움이 닿는 곳 — 365일의 시</title>
   <link rel="stylesheet" href="../styles.css" />
+  <style>
+    * { -webkit-tap-highlight-color: transparent; }
+  </style>
 </head>
 <body>
 
@@ -102,10 +108,19 @@
       setTimeout(showMessage, 600);
     }
 
-    orb.addEventListener('click', activateOrb);
-    orb.addEventListener('touchend', function(e) {
-      e.preventDefault();
+    let orbBusy = false;
+    function handleOrb(e) {
+      if (orbBusy) return;
+      orbBusy = true;
       activateOrb(e);
+      setTimeout(() => { orbBusy = false; }, 1000);
+    }
+
+    orb.addEventListener('click', handleOrb);
+    orb.addEventListener('touchend', function(e) {
+      if (orbBusy) return;
+      e.preventDefault();
+      handleOrb(e);
     });
 
     closeBtn.addEventListener('click', hideMessage);

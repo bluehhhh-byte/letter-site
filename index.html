@@ -2,17 +2,21 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#07070d" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>그리움이 닿는 곳</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600&family=Inter:wght@200;300;400;500&display=swap');
-    * { margin:0; padding:0; box-sizing:border-box; }
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
     body {
       background:#07070d; color:#e8e4de;
       font-family:'Noto Serif KR',serif;
-      min-height:100vh; display:flex; flex-direction:column;
+      min-height:100vh; min-height:-webkit-fill-available;
+      display:flex; flex-direction:column;
       align-items:center; justify-content:center;
-      padding:2rem; text-align:center;
+      padding:2rem; text-align:center; overflow-x:hidden;
     }
     .stars {
       position:fixed; inset:0; pointer-events:none; overflow:hidden;
@@ -23,23 +27,33 @@
       animation:twinkle var(--d) ease-in-out infinite; opacity:0;
     }
     @keyframes twinkle { 0%,100%{opacity:0} 50%{opacity:0.8} }
-    .content { position:relative; z-index:1; max-width:600px; }
+    .content { position:relative; z-index:1; max-width:600px; padding:0 1rem; }
     .logo { font-size:2.5rem; margin-bottom:.5rem; opacity:0.6; }
-    h1 { font-size:clamp(1.8rem,4vw,2.8rem); font-weight:300; margin-bottom:.8rem; }
+    h1 { font-size:clamp(1.6rem,5vw,2.8rem); font-weight:300; margin-bottom:.8rem; }
     h1 em { font-style:normal; color:#c9a96e; }
-    .desc { color:#9e9a94; font-weight:300; font-size:.95rem; line-height:1.8; margin-bottom:2.5rem; }
+    .desc { color:#9e9a94; font-weight:300; font-size:.9rem; line-height:1.8; margin-bottom:2rem; }
     .links { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
     .link-card {
       display:flex; flex-direction:column; align-items:center; gap:.6rem;
-      padding:1.8rem 2.5rem; border:1px solid #1e1e2a;
+      padding:1.5rem 2rem; border:1px solid #1e1e2a;
       text-decoration:none; color:#e8e4de; transition:all .3s;
-      background:#12121a; border-radius:4px; min-width:160px;
+      background:#12121a; border-radius:4px; min-width:145px; flex:1;
+      -webkit-touch-callout:none;
     }
-    .link-card:hover { border-color:#c9a96e; transform:translateY(-4px); box-shadow:0 8px 30px rgba(0,0,0,0.3); }
-    .link-card .icon { font-size:2rem; }
-    .link-card .label { font-family:'Inter',sans-serif; font-size:.8rem; letter-spacing:.15em; color:#c9a96e; }
-    .link-card .sub { font-family:'Inter',sans-serif; font-size:.65rem; color:#6b6765; }
-    .footer { position:fixed; bottom:1.5rem; left:0; right:0; font-family:'Inter',sans-serif; font-size:.65rem; color:#5a5655; letter-spacing:.1em; }
+    @media (hover:hover) {
+      .link-card:hover { border-color:#c9a96e; transform:translateY(-4px); box-shadow:0 8px 30px rgba(0,0,0,0.3); }
+    }
+    .link-card:active { transform:scale(0.96); }
+    .link-card .icon { font-size:1.8rem; }
+    .link-card .label { font-family:'Inter',sans-serif; font-size:.75rem; letter-spacing:.15em; color:#c9a96e; }
+    .link-card .sub { font-family:'Inter',sans-serif; font-size:.6rem; color:#6b6765; }
+    .footer { position:fixed; bottom:1.5rem; left:0; right:0; font-family:'Inter',sans-serif; font-size:.6rem; color:#5a5655; letter-spacing:.1em; }
+    @media (max-width:480px) {
+      body { padding:1.5rem 1rem; }
+      .link-card { padding:1.2rem 1.2rem; min-width:120px; }
+      .logo { font-size:2rem; }
+      .footer { font-size:.5rem; bottom:1rem; }
+    }
   </style>
 </head>
 <body>
