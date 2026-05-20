@@ -70,7 +70,7 @@ const TAROT_MAJOR = [
     '미완성, 지연, 단기적인 목표. 완성에 이르지 못해 좌절하고 있다. 마지막 한 걸음이 남았다.']
 ];
 
-const TAROT_SUITS = {
+var TAROT_SUITS = {
   wands:    { name: '완드', nameEn: 'Wands',    element: '불', desc: '열정, 창조, 행동, 직업' },
   cups:     { name: '컵',  nameEn: 'Cups',     element: '물', desc: '감정, 사랑, 관계, 직관' },
   swords:   { name: '검',  nameEn: 'Swords',   element: '공기', desc: '지성, 갈등, 진실, 선택' },
@@ -146,8 +146,7 @@ const MINOR_MEANINGS = [
 ];
 
 // ================ BUILD DECK ================
-const TAROT_DECK = [];
-
+var TAROT_DECK = [];
 const majorSymbols = ['🃏','✨','🌙','🌸','👑','📿','💞','🏛️','🦁','🏮','☯️','⚖️','🪢','💀','🌊','😈','🗼','⭐','🌙','☀️','📯','🌍'];
 const minorSymbols = { wands:'🗡', cups:'🏺', swords:'⚔️', pentacles:'🪙' };
 
