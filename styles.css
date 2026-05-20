@@ -351,10 +351,26 @@ body {
   .mode-btn { padding: 0.4rem 1rem; font-size: 0.7rem; }
   .footer { font-size: 0.55rem; bottom: 1rem; }
   .prompt { font-size: 0.7rem; }
+  .message-overlay { padding: 1rem; }
+  .message-card .close-btn { top: .6rem; right: .8rem; font-size: 1.1rem; }
+  .message-card .again-btn { padding: .5rem 1.4rem; font-size: .7rem; margin-top: 1.5rem; }
+}
+
+@media (max-width: 374px) {
+  .orb { width: 130px; height: 130px; }
+  .orb-inner { width: 40px; height: 40px; }
+  .orb-icon { font-size: 1.3rem; }
+  .message-card { padding: 1.2rem 1rem; margin: .3rem; }
+  .message-text { font-size: .8rem; }
 }
 
 @media (min-width: 481px) and (max-width: 768px) {
   .orb { width: 180px; height: 180px; }
   .orb-inner { width: 60px; height: 60px; }
   .message-card { padding: 2.5rem 2rem; }
+}
+
+@supports (padding:max(0px)) {
+  .message-overlay { padding-left:max(2rem,env(safe-area-inset-left)); padding-right:max(2rem,env(safe-area-inset-right)); padding-bottom:max(2rem,env(safe-area-inset-bottom)); }
+  .footer { padding-bottom:max(0px,env(safe-area-inset-bottom)); }
 }

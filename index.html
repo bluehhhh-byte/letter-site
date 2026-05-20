@@ -51,8 +51,19 @@
     @media (max-width:480px) {
       body { padding:1.5rem 1rem; }
       .link-card { padding:1.2rem 1.2rem; min-width:120px; }
+      .link-card .icon { font-size:1.4rem; }
+      .link-card .label { font-size:.7rem; }
       .logo { font-size:2rem; }
       .footer { font-size:.5rem; bottom:1rem; }
+      .desc { font-size:.8rem; }
+    }
+    @media (max-width:374px) {
+      .links { flex-direction:column; align-items:center; }
+      .link-card { width:100%; max-width:220px; }
+    }
+    @supports (padding:max(0px)) {
+      body { padding-left:max(2rem,env(safe-area-inset-left)); padding-right:max(2rem,env(safe-area-inset-right)); padding-bottom:max(2rem,env(safe-area-inset-bottom)); }
+      .footer { padding-bottom:max(0px,env(safe-area-inset-bottom)); }
     }
   </style>
 </head>
