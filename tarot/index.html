@@ -371,7 +371,7 @@
       return reversed?card.reversed:card.upright;
     }
 
-    async function callGeminiReading(cardData, question) {
+    async function callGeminiReading(cardData, hasQuestion, question) {
 
       const cardInfo = cardData.map((d, i) => {
         const c = d.card;
@@ -383,7 +383,8 @@
 의미: ${getMeaning(c, d.reversed)}`;
       }).join('\n\n');
 
-      const prompt = `당신은 타로 리더입니다. 아래 정보를 바탕으로 따뜻하고 통찰력 있는 타로 리딩을 한국어로 제공해주세요.
+      const prompt = hasQuestion
+        ? `당신은 타로 리더입니다. 아래 정보를 바탕으로 따뜻하고 통찰력 있는 타로 리딩을 한국어로 제공해주세요.
 
 질문: ${question}
 
@@ -394,6 +395,17 @@ ${cardInfo}
 {
   "title": "3-5글자 이내의 리딩 제목",
   "text": "종합 해석 (4-6문장, 따뜻한 어조, 카드들의 연결성을 담아)",
+  "detail": "메이저/마이너 수, 방향성, 원소 정보 등 통계 (예: 메이저 1장 · 역방향 1장 · 원소 불 2개 · 물 1개)"
+}`
+        : `당신은 타로 리더입니다. 질문 없이 찾아온 이를 위해 일반적인 운의 흐름과 카드의 상징에 대한 타로 리딩을 한국어로 제공해주세요.
+
+선택된 카드 3장:
+${cardInfo}
+
+다음 JSON 형식으로만 응답해주세요 (다른 설명 없이 JSON만):
+{
+  "title": "3-5글자 이내의 리딩 제목",
+  "text": "종합 해석 (4-6문장, 운의 흐름과 상징 중심으로)",
   "detail": "메이저/마이너 수, 방향성, 원소 정보 등 통계 (예: 메이저 1장 · 역방향 1장 · 원소 불 2개 · 물 1개)"
 }`;
 
@@ -471,7 +483,8 @@ ${cardInfo}
     async function revealCards() {
       if (selected.length !== MAX_SELECT) return;
 
-      const question = qInput.value.trim() || '질문 없이';
+      const hasQuestion = qInput.value.trim().length > 0;
+      const question = qInput.value.trim() || '질문없음';
 
       const cardData = selected.map((s, i) => {
         const card = TAROT_DECK[s.deckIdx];
@@ -490,7 +503,7 @@ ${cardInfo}
       document.body.style.overflow = 'hidden';
 
       try {
-        const reading = await callGeminiReading(cardData, question);
+        const reading = await callGeminiReading(cardData, hasQuestion, question);
         setLoading(false);
         crTitle.textContent = reading.title;
         crText.textContent = reading.text;
