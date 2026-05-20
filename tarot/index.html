@@ -136,6 +136,18 @@
     .result-btn:active { transform:scale(0.96); }
 
     /* Animations */
+    /* Loading */
+    .cr-loading { display:none; text-align:center; padding:2rem 0; }
+    .cr-loading.active { display:block; animation:fadeUp .4s ease; }
+    .loading-dots { display:flex; gap:.5rem; justify-content:center; margin-bottom:1rem; }
+    .loading-dots span { width:10px; height:10px; border-radius:50%; background:var(--gold); animation:loadDot 1.4s ease-in-out infinite; }
+    .loading-dots span:nth-child(2) { animation-delay:.2s; }
+    .loading-dots span:nth-child(3) { animation-delay:.4s; }
+    @keyframes loadDot { 0%,80%,100%{opacity:.2;transform:scale(.8)} 40%{opacity:1;transform:scale(1)} }
+    .loading-text { font-family:var(--font-sans); font-size:.75rem; color:var(--text-dim); letter-spacing:.1em; }
+    .cr-error { display:none; text-align:center; padding:1rem; margin-top:1rem; border:1px solid rgba(200,80,80,0.3); background:rgba(200,80,80,0.1); color:#d49090; font-family:var(--font-sans); font-size:.75rem; line-height:1.6; border-radius:4px; animation:fadeUp .4s ease; }
+    .cr-error.active { display:block; }
+
     @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
     @keyframes cardUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
 
@@ -222,6 +234,13 @@
         <div class="cr-title" id="crTitle"></div>
         <div class="cr-text" id="crText"></div>
         <div class="cr-detail" id="crDetail"></div>
+        <div class="cr-loading" id="crLoading">
+          <div class="loading-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <p class="loading-text">별자리가 답을 읽고 있습니다…</p>
+        </div>
+        <div class="cr-error" id="crError"></div>
       </div>
 
       <div class="result-cards" id="resultCards"></div>
@@ -234,6 +253,7 @@
   </div>
 
   <script src="tarot.js"></script>
+  <script src="../config.js"></script>
   <script>
     const grid=document.getElementById('tarotGrid');
     const selectedCount=document.getElementById('selectedCount');
@@ -246,6 +266,8 @@
     const crTitle=document.getElementById('crTitle');
     const crText=document.getElementById('crText');
     const crDetail=document.getElementById('crDetail');
+    const crLoading=document.getElementById('crLoading');
+    const crError=document.getElementById('crError');
     const qInput=document.getElementById('qInput');
 
     const MAX_SELECT=3;
@@ -334,87 +356,95 @@
       return reversed?card.reversed:card.upright;
     }
 
-    function generateCombinedReading(cards){
-      const majors=cards.filter(c=>c.card.type==='major').length;
-      const revCount=cards.filter(c=>c.reversed).length;
-      const suits=cards.map(c=>c.card.suit).filter(Boolean);
-      const elements=suits.map(s=>TAROT_SUITS[s]?.element).filter(Boolean);
-
-      // Title
-      let title='';
-      if(majors>=2) title='깊은 전환의 시기';
-      else if(majors===1) title='중요한 교훈이 있는 때';
-      else if(revCount>=2) title='내면의 성찰이 필요한 때';
-      else if(revCount===0 && majors===0) title='순조로운 흐름';
-      else title='균형을 찾아가는 여정';
-
-      // Body text
-      let parts=[];
-      if(majors>=2) parts.push('메이저 아르카나가 두 장 이상 등장했습니다. 이는 당신이 인생의 중요한 전환점에 서 있음을 의미합니다. 우주가 당신에게 큰 메시지를 보내고 있습니다.');
-      if(revCount>=2) parts.push('역방향 카드가 많습니다. 현재 내면의 갈등이나 외부의 장애물이 있음을 나타냅니다. 그러나 역방향은 또한 성장의 기회이기도 합니다.');
-      if(revCount===0 && majors>=1) parts.push('모든 카드가 정방향입니다. 에너지가 막힘 없이 흐르고 있습니다. 당신의 의지와 상황이 조화를 이루고 있습니다.');
-      if(suits.length>0){
-        const uniqueSuits=[...new Set(suits)];
-        if(uniqueSuits.length===1){
-          const s=TAROT_SUITS[uniqueSuits[0]];
-          parts.push(`모든 카드가 ${s.name} 계열입니다. ${s.element}의 기운이 강하게 작용하고 있습니다. ${s.desc}와 관련된 주제에 집중하세요.`);
-        }else if(uniqueSuits.length===3){
-          parts.push('다양한 영역의 카드가 골고루 나타났습니다. 인생의 여러 측면이 동시에 변화하고 있습니다. 균형 잡힌 시각이 필요합니다.');
-        }
+    async function callGeminiReading(cardData, question) {
+      if (!GEMINI_API_KEY || GEMINI_API_KEY === '여기에_API_키를_입력하세요') {
+        throw new Error('Gemini API 키가 설정되지 않았습니다. config.js 파일을 확인해주세요.');
       }
-      if(elements.includes('불') && elements.includes('물')) parts.push('불과 물의 기운이共存하고 있습니다. 열정과 감정 사이에서 균형을 찾아야 합니다.');
-      if(revCount===1) parts.push('한 장의 역방향 카드는 특정 영역에서의 도전을 의미합니다. 그 카드의 메시지에 주목하세요.');
 
-      if(parts.length===0) parts.push('세 장의 카드가 조화롭게 연결되어 있습니다. 각 카드의 메시지를 차례로 따라가며 종합적인 통찰을 얻으세요.');
+      const cardInfo = cardData.map((d, i) => {
+        const c = d.card;
+        return `[${d.posName}]
+카드: ${c.name} (${c.nameEn})
+방향: ${d.reversed ? '역방향' : '정방향'}
+타입: ${c.type === 'major' ? '메이저 아르카나' : `${c.suitName} (${c.element})`}
+키워드: ${c.keywords || ''}
+의미: ${getMeaning(c, d.reversed)}`;
+      }).join('\n\n');
 
-      // Element counts for detail
-      const elemCount={};
-      elements.forEach(e=>{ elemCount[e]=(elemCount[e]||0)+1; });
-      const elemStr=Object.entries(elemCount).map(([k,v])=>`${k} ${v}개`).join(', ')||'없음';
+      const prompt = `당신은 타로 리더입니다. 아래 정보를 바탕으로 따뜻하고 통찰력 있는 타로 리딩을 한국어로 제공해주세요.
 
-      return {
-        title,
-        text: parts.join(' '),
-        detail: `메이저 아르카나 ${majors}장 · 역방향 ${revCount}장 · 원소 ${elemStr}`
-      };
+질문: ${question}
+
+선택된 카드 3장:
+${cardInfo}
+
+다음 JSON 형식으로만 응답해주세요 (다른 설명 없이 JSON만):
+{
+  "title": "3-5글자 이내의 리딩 제목",
+  "text": "종합 해석 (4-6문장, 따뜻한 어조, 카드들의 연결성을 담아)",
+  "detail": "메이저/마이너 수, 방향성, 원소 정보 등 통계 (예: 메이저 1장 · 역방향 1장 · 원소 불 2개 · 물 1개)"
+}`;
+
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+              temperature: 0.8,
+              maxOutputTokens: 1024
+            }
+          })
+        }
+      );
+
+      if (!res.ok) {
+        const err = await res.text();
+        throw new Error(`Gemini API 오류 (${res.status}): ${err}`);
+      }
+
+      const data = await res.json();
+      const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+      if (!raw) throw new Error('Gemini 응답을 읽을 수 없습니다.');
+
+      try {
+        const json = JSON.parse(raw.replace(/^```(?:json)?\s*/, '').replace(/\s*```$/, ''));
+        if (!json.title || !json.text) throw new Error('응답 형식이 올바르지 않습니다.');
+        return json;
+      } catch (e) {
+        throw new Error('Gemini 응답을 파싱하는 중 오류가 발생했습니다.');
+      }
     }
 
-    function revealCards(){
-      if(selected.length!==MAX_SELECT) return;
+    function setLoading(show) {
+      crLoading.classList.toggle('active', show);
+      crTitle.style.display = show ? 'none' : '';
+      crText.style.display = show ? 'none' : '';
+      crDetail.style.display = show ? 'none' : '';
+    }
 
-      const question=qInput.value.trim()||'질문 없이';
+    function setError(msg) {
+      crError.textContent = msg;
+      crError.classList.add('active');
+    }
 
-      // Build card data
-      const cardData=selected.map((s,i)=>{
-        const card=TAROT_DECK[s.deckIdx];
-        return {card,reversed:s.reversed,position:i,posName:POSITIONS[i],posDesc:POS_DESC[i]};
-      });
+    function buildCardHtml(cardData) {
+      resultCards.innerHTML = '';
+      cardData.forEach((d, i) => {
+        const c = d.card;
+        const orientText = d.reversed ? '역방향' : '정방향';
+        const orientClass = d.reversed ? 'orient-reversed-badge' : 'orient-upright-badge';
+        const suitInfo = c.suit ? `${c.suitName} (${c.element})` : '메이저 아르카나';
+        const meaning = getMeaning(c, d.reversed);
 
-      // Generate combined reading
-      const reading=generateCombinedReading(cardData);
-
-      // Display question
-      resultQuestion.textContent=question;
-
-      // Display combined reading
-      crTitle.textContent=reading.title;
-      crText.textContent=reading.text;
-      crDetail.innerHTML=reading.detail;
-
-      // Display cards
-      resultCards.innerHTML='';
-      cardData.forEach((d,i)=>{
-        const c=d.card;
-        const orientText=d.reversed?'역방향':'정방향';
-        const orientClass=d.reversed?'orient-reversed-badge':'orient-upright-badge';
-        const suitInfo=c.suit ? `${c.suitName} (${c.element})` : '메이저 아르카나';
-        const meaning=getMeaning(c,d.reversed);
-
-        const div=document.createElement('div');
-        div.className='result-card'+(d.reversed?' result-reversed':'');
-        div.innerHTML=`
+        const div = document.createElement('div');
+        div.className = 'result-card' + (d.reversed ? ' result-reversed' : '');
+        div.innerHTML = `
           <div class="rc-pos">CARD ${i+1} · ${d.posName}</div>
-          <span class="rc-icon">${c.symbol||'🃏'}</span>
+          <span class="rc-icon">${c.symbol || '🃏'}</span>
           <div class="rc-name">${c.name}</div>
           <div class="rc-name-en">${c.nameEn}</div>
           <div class="rc-orient ${orientClass}">${orientText}</div>
@@ -424,9 +454,41 @@
         `;
         resultCards.appendChild(div);
       });
+    }
 
+    async function revealCards() {
+      if (selected.length !== MAX_SELECT) return;
+
+      const question = qInput.value.trim() || '질문 없이';
+
+      const cardData = selected.map((s, i) => {
+        const card = TAROT_DECK[s.deckIdx];
+        return { card, reversed: s.reversed, position: i, posName: POSITIONS[i], posDesc: POS_DESC[i] };
+      });
+
+      // Show overlay immediately with loading
+      resultQuestion.textContent = question;
+      resultCards.innerHTML = '';
+      crTitle.textContent = '';
+      crText.textContent = '';
+      crDetail.textContent = '';
+      crError.classList.remove('active');
+      setLoading(true);
       resultOverlay.classList.add('open');
-      document.body.style.overflow='hidden';
+      document.body.style.overflow = 'hidden';
+
+      try {
+        const reading = await callGeminiReading(cardData, question);
+        setLoading(false);
+        crTitle.textContent = reading.title;
+        crText.textContent = reading.text;
+        crDetail.innerHTML = reading.detail;
+        buildCardHtml(cardData);
+      } catch (e) {
+        setLoading(false);
+        setError(e.message || 'AI 해석 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+        buildCardHtml(cardData);
+      }
     }
 
     function resetSelection(){

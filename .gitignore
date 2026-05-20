@@ -5,3 +5,6 @@ Thumbs.db
 
 # git bundle
 *.bundle
+
+# API keys
+config.js
