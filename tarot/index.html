@@ -277,7 +277,8 @@
   <meta http-equiv="Expires" content="0" />
   <script src="tarot.js"></script>
   <script>
-    const GEMINI_API_KEY = 'AIzaSyBzr77YSdsErk5t-jHm45Zlp9fpWrurg00';
+    const GEMINI_API_KEY = 'AIzaSyC_m4srdinWpiwM7MdMyQsWUU9WAfowv7g';
+    const GEMINI_MODEL = 'gemini-3.1-flash-lite-preview';
 
     const grid=document.getElementById('tarotGrid');
     const selectedCount=document.getElementById('selectedCount');
@@ -419,7 +420,7 @@ ${cardInfo}
 }`;
 
       const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${GEMINI_API_KEY}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
