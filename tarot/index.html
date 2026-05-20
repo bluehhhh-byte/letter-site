@@ -279,7 +279,7 @@
   <script src="tarot.js"></script>
   <script>
     const GEMINI_API_KEY = 'AIzaSyC_m4srdinWpiwM7MdMyQsWUU9WAfowv7g';
-    const GEMINI_MODEL = 'gemini-3.1-flash-lite-preview';
+    const GEMINI_MODEL = 'gemini-3.1-flash-lite';
 
     const grid=document.getElementById('tarotGrid');
     const selectedCount=document.getElementById('selectedCount');
@@ -415,6 +415,18 @@
       return reversed?card.reversed:card.upright;
     }
 
+    function generateFallbackReading(cards) {
+      const revCount=cards.filter(c=>c.reversed).length;
+      const suits=[...new Set(cards.map(c=>c.card.suit).filter(Boolean))];
+      const title=revCount>=2?'내면의 성찰이 필요한 때':suits.length===1?'강한 에너지의 흐름':'균형을 찾아가는 여정';
+      let text='카드들이 당신에게 메시지를 전하고 있습니다. ';
+      if(revCount>=2) text+='역방향 카드가 많아 내면의 성찰이 필요한 시기입니다. ';
+      if(suits.length===1) text+=`모든 카드가 ${cards[0].card.suitName} 계열로, ${cards[0].card.element}의 기운이 강합니다. `;
+      text+='각 카드의 의미를 참고하여 자신의 상황에 적용해보세요.';
+      const detail=`메이저 ${cards.filter(c=>c.card.type==='major').length}장 · 역방향 ${revCount}장`;
+      return {title, text, detail};
+    }
+
     async function callGeminiReading(cardData, hasQuestion, question) {
 
       const cardInfo = cardData.map((d, i) => {
@@ -470,6 +482,7 @@ ${cardInfo}
 
       if (!res.ok) {
         const err = await res.text();
+        console.error('Gemini API error:', res.status, err);
         throw new Error(`Gemini API 오류 (${res.status}): ${err}`);
       }
 
@@ -557,9 +570,16 @@ ${cardInfo}
         _lastReading = reading;
         _lastQuestion = question;
       } catch (e) {
+        console.error('Reading failed, using fallback:', e);
         setLoading(false);
-        setError(e.message || 'AI 해석 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+        const reading = generateFallbackReading(cardData);
+        crTitle.textContent = reading.title;
+        crText.textContent = reading.text;
+        crDetail.innerHTML = reading.detail;
         buildCardHtml(cardData);
+        _lastCardData = cardData;
+        _lastReading = reading;
+        _lastQuestion = question;
       }
     }
 
