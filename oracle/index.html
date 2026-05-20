@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>그리움이 닿는 곳 — 365일의 시</title>
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+
+  <div class="stars" id="stars"></div>
+
+  <div class="orb-wrapper">
+    <div class="orb" id="orb" role="button" aria-label="메시지 열기">
+      <div class="orb-inner"></div>
+      <span class="orb-icon">✦</span>
+    </div>
+    <p class="prompt" id="prompt">질문을 떠올리고 수정구를 터치하세요</p>
+  </div>
+
+  <div class="message-overlay" id="overlay">
+    <div class="message-card">
+      <button class="close-btn" id="closeBtn">✕</button>
+      <div class="message-number" id="msgNum"></div>
+      <div class="message-text" id="msgText"></div>
+      <button class="again-btn" id="againBtn">다시 열기</button>
+    </div>
+  </div>
+
+  <nav class="mode-nav">
+    <a href="index.html" class="mode-btn active">오라클</a>
+    <a href="../tarot/index.html" class="mode-btn">타로</a>
+  </nav>
+
+  <div class="footer">365일의 시 <span>·</span> 그리움이 닿는 곳</div>
+
+  <script src="poems.js"></script>
+  <script>
+    /* ================ STARS ================ */
+    (function createStars() {
+      const c = document.getElementById('stars');
+      for (let i = 0; i < 80; i++) {
+        const s = document.createElement('div');
+        s.className = 'star';
+        s.style.left = Math.random() * 100 + '%';
+        s.style.top = Math.random() * 100 + '%';
+        s.style.width = s.style.height = (Math.random() * 2.5 + 1) + 'px';
+        s.style.setProperty('--d', (Math.random() * 4 + 3) + 's');
+        s.style.animationDelay = Math.random() * 5 + 's';
+        c.appendChild(s);
+      }
+    })();
+
+    /* ================ MAGIC 8 BALL LOGIC ================ */
+    const orb = document.getElementById('orb');
+    const overlay = document.getElementById('overlay');
+    const msgText = document.getElementById('msgText');
+    const msgNum = document.getElementById('msgNum');
+    const closeBtn = document.getElementById('closeBtn');
+    const againBtn = document.getElementById('againBtn');
+    const prompt = document.getElementById('prompt');
+
+    let usedToday = null;
+    let lastIndex = -1;
+
+    function getRandomPoem() {
+      let idx;
+      do {
+        idx = Math.floor(Math.random() * POEMS.length);
+      } while (idx === lastIndex && POEMS.length > 1);
+      lastIndex = idx;
+      return { index: idx + 1, text: POEMS[idx] };
+    }
+
+    function showMessage() {
+      const poem = getRandomPoem();
+      const lines = poem.text.split('\n');
+      msgNum.textContent = 'MESSAGE #' + String(poem.index).padStart(3, '0') + ' / ' + POEMS.length;
+      msgText.innerHTML = lines.map((l, i) =>
+        '<span class="line" style="animation-delay:' + (i * 0.08) + 's">' + l + '</span>'
+      ).join('');
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function hideMessage() {
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+      setTimeout(() => {
+        msgText.innerHTML = '';
+        msgNum.textContent = '';
+      }, 300);
+    }
+
+    function activateOrb(e) {
+      orb.classList.remove('activating');
+      void orb.offsetWidth;
+      orb.classList.add('activating');
+      setTimeout(() => {
+        orb.classList.remove('activating');
+      }, 800);
+      setTimeout(showMessage, 600);
+    }
+
+    orb.addEventListener('click', activateOrb);
+    orb.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      activateOrb(e);
+    });
+
+    closeBtn.addEventListener('click', hideMessage);
+    againBtn.addEventListener('click', function() {
+      hideMessage();
+      setTimeout(showMessage, 400);
+    });
+
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) hideMessage();
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') hideMessage();
+    });
+  </script>
+</body>
+</html>
