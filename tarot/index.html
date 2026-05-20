@@ -39,8 +39,6 @@
     .question-input::placeholder { color:var(--text-muted); font-weight:300; }
     .question-input:focus { border-color:var(--gold-dim); }
     .question-label { font-family:var(--font-sans); font-size:.7rem; letter-spacing:.15em; color:var(--text-muted); margin-bottom:.5rem; display:block; }
-    .apikey-reset-btn { display:inline-block; margin-top:.4rem; background:none; border:none; color:var(--text-muted); font-family:var(--font-sans); font-size:.6rem; text-decoration:underline; cursor:pointer; opacity:.6; }
-    .apikey-reset-btn:hover { opacity:1; color:var(--gold); }
 
     /* Prompt */
     .tarot-prompt { text-align:center; margin:0 0 1.5rem; font-family:var(--font-serif); font-size:.9rem; color:var(--text-dim); font-weight:300; line-height:1.8; }
@@ -228,7 +226,6 @@
     <div class="question-area">
       <label class="question-label" for="qInput">당신의 질문을 적어보세요</label>
       <textarea class="question-input" id="qInput" rows="2" placeholder="예) 나에게 다가올 변화는 무엇일까요…"></textarea>
-      <button class="apikey-reset-btn" id="apiKeyResetBtn">API 키 변경</button>
     </div>
 
     <p class="tarot-prompt">
@@ -278,6 +275,7 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <script src="tarot.js"></script>
+  <script src="../config.js"></script>
   <script>
     const grid=document.getElementById('tarotGrid');
     const selectedCount=document.getElementById('selectedCount');
@@ -293,16 +291,6 @@
     const crLoading=document.getElementById('crLoading');
     const crError=document.getElementById('crError');
     const qInput=document.getElementById('qInput');
-
-    let GEMINI_API_KEY = localStorage.getItem('gemini_api_key');
-    if (!GEMINI_API_KEY) {
-      GEMINI_API_KEY = prompt('Gemini API 키를 입력하세요 (https://aistudio.google.com/apikey 에서 발급)');
-      if (GEMINI_API_KEY) localStorage.setItem('gemini_api_key', GEMINI_API_KEY);
-    }
-    document.getElementById('apiKeyResetBtn').addEventListener('click', () => {
-      const newKey = prompt('새 Gemini API 키를 입력하세요');
-      if (newKey) { localStorage.setItem('gemini_api_key', newKey); GEMINI_API_KEY = newKey; }
-    });
 
     const MAX_SELECT=3;
     const POSITIONS=['과거의 근원','현재의 상황','미래의 조언'];

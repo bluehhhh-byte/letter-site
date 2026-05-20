@@ -1,0 +1,10 @@
+# OS files
+Thumbs.db
+.DS_Store
+*.swp
+
+# git bundle
+*.bundle
+
+# API keys
+config.js

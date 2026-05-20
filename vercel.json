@@ -1,4 +1,6 @@
 {
   "version": 2,
-  "public": true
+  "public": true,
+  "buildCommand": "node scripts/build-config.js",
+  "outputDirectory": "."
 }
