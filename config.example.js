@@ -1,1 +1,0 @@
-const GEMINI_API_KEY = '여기에_API_키를_입력하세요';
