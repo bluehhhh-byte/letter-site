@@ -289,7 +289,7 @@
       <div class="result-actions">
         <button class="result-btn" id="resultCloseBtn">다시 선택하기</button>
         <button class="result-btn" id="resultCopyBtn">📋 프롬프트 복사</button>
-        <button class="result-btn" id="resultGeminiBtn">✨ Gemini에게 물어보기</button>
+        <button class="result-btn" id="resultGeminiBtn">✨ Google AI 모드로 물어보기</button>
         <button class="result-btn primary" id="resultRedrawBtn">새로 뽑기</button>
       </div>
     </div>
@@ -452,9 +452,9 @@
       navigator.clipboard.writeText(text).then(()=>{
         const btn=document.getElementById('resultGeminiBtn');
         btn.textContent='✅ 복사+이동';
-        setTimeout(()=>{ btn.textContent='✨ Gemini에게 물어보기'; },2000);
+        setTimeout(()=>{ btn.textContent='✨ Google AI 모드로 물어보기'; },2000);
       }).catch(()=>{});
-      window.open('https://gemini.google.com/', '_blank');
+      window.open('https://www.google.com/webhp?hl=ko&ictx=0&sa=X&ved=0ahUKEwixyPHYpsmUAxUanGoFHUCyFtUQPAgJ&zx=1779336929433', '_blank');
     }
 
     function shuffleGrid(){
