@@ -45,7 +45,7 @@ ${cardInfo}
   "detail": "메이저/마이너 수, 방향성, 원소 정보 등 통계 (예: 메이저 1장 · 역방향 1장 · 원소 불 2개 · 물 1개)"
 }`;
 
-  const apiKey = process.env.GEMINI_API_KEY || 'AIzaSyC_m4srdinWpiwM7MdMyQsWUU9WAfowv7g';
+  const apiKey = process.env.GEMINI_API_KEY || 'AIzaSyCI0PZcPZAW7SYjNxkyfEVaunqa5GZlGF0';
 
   try {
     const response = await fetch(
