@@ -288,7 +288,7 @@
 
       <div class="result-actions">
         <button class="result-btn" id="resultCloseBtn">다시 선택하기</button>
-        <button class="result-btn" id="resultCopyBtn">📋 텍스트 복사</button>
+        <button class="result-btn" id="resultCopyBtn">📋 프롬프트 복사</button>
         <button class="result-btn primary" id="resultRedrawBtn">새로 뽑기</button>
       </div>
     </div>
@@ -410,31 +410,31 @@
     document.getElementById('resultCopyBtn').addEventListener('click', copyResultText);
 
     function copyResultText() {
-      if (!_lastCardData || !_lastReading) return;
-      let text = '✨ 타로 리딩 결과\n';
-      text += '━'.repeat(24) + '\n\n';
-      if (_lastQuestion && _lastQuestion !== '질문없음') text += `Q. ${_lastQuestion}\n\n`;
-      text += `📖 ${_lastReading.title}\n${_lastReading.text}\n\n`;
-      text += `📊 ${_lastReading.detail}\n\n`;
-      text += '━'.repeat(24) + '\n';
+      if (!_lastCardData) return;
+      const hasQ = _lastQuestion && _lastQuestion !== '질문없음';
+      let text = hasQ ? `질문: ${_lastQuestion}\n\n` : '';
+      text += `타로 리딩을 부탁합니다. 아래 ${_lastCardData.length}장의 카드 스프레드를 바탕으로 깊이 있는 종합 해석을 해주세요.\n\n`;
       _lastCardData.forEach((d,i)=>{
         const c=d.card;
-        text += `\n[CARD ${i+1} · ${d.posName}]\n`;
-        text += `${c.name} (${c.nameEn})\n`;
-        text += `${d.reversed ? '역방향' : '정방향'}\n`;
-        text += `${c.suit ? `${c.suitName} (${c.element})` : '메이저 아르카나'}\n`;
-        text += `${getMeaning(c,d.reversed)}\n`;
+        text += `【${d.posName}】\n`;
+        text += `카드: ${c.name} (${c.nameEn})\n`;
+        text += `방향: ${d.reversed ? '역방향' : '정방향'}\n`;
+        text += `타입: ${c.suit ? `${c.suitName} (${c.element})` : '메이저 아르카나'}\n`;
+        text += `키워드: ${c.keywords || '-'}\n`;
+        text += `의미: ${getMeaning(c,d.reversed)}\n\n`;
       });
-      text += '\n' + '━'.repeat(24) + '\n';
-      text += '그리움이 닿는 곳 — letter-site-brown.vercel.app\n';
+      text += '---\n';
+      text += '각 카드의 위치별 의미와 카드들 간의 연결성을 분석해주세요. ';
+      text += '메이저/마이너 비율, 정역방향의 흐름, 원소의 분포를 종합하여 ';
+      text += '따뜻하고 통찰력 있는 문장으로 해석해주세요.\n';
       navigator.clipboard.writeText(text).then(()=>{
         const btn=document.getElementById('resultCopyBtn');
         btn.textContent='✅ 복사됨';
-        setTimeout(()=>{ btn.textContent='📋 텍스트 복사'; },2000);
+        setTimeout(()=>{ btn.textContent='📋 프롬프트 복사'; },2000);
       }).catch(()=>{
         const btn=document.getElementById('resultCopyBtn');
         btn.textContent='❌ 복사 실패';
-        setTimeout(()=>{ btn.textContent='📋 텍스트 복사'; },2000);
+        setTimeout(()=>{ btn.textContent='📋 프롬프트 복사'; },2000);
       });
     }
 
