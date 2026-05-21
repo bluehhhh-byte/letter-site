@@ -454,8 +454,7 @@
         btn.textContent='✅ 복사+이동';
         setTimeout(()=>{ btn.textContent='✨ Google AI 모드로 물어보기'; },2000);
       }).catch(()=>{});
-      const aiUrl = 'https://www.google.com/search?q=' + encodeURIComponent(text) + '&udm=14';
-      window.open(aiUrl, '_blank');
+      window.open('https://www.google.com/webhp?q=' + encodeURIComponent(text) + '&hl=ko', '_blank');
     }
 
     function shuffleGrid(){
