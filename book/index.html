@@ -185,6 +185,12 @@
     var loading = document.getElementById('bkLoading');
     var narrativeIdx = Math.floor(Math.random() * NARRATIVES.length);
 
+    function proxyCover(url) {
+      return url && url.startsWith('https://image.aladin.co.kr/')
+        ? '/api/cover?url=' + encodeURIComponent(url)
+        : url;
+    }
+
     function shuffleArray(arr) {
       for (var i = arr.length - 1; i > 0; i--) {
         var j = Math.floor(Math.random() * (i + 1));
@@ -225,7 +231,7 @@
           var pickHtml =
             '<a href="' + pick.detailUrl + '" target="_blank" rel="noopener" class="bk-pick">' +
             '  <div class="bk-pick-label">✦ 오늘의 선택</div>' +
-            (pick.coverImg ? '<img class="bk-pick-cover" src="' + pick.coverImg + '" alt="' + pick.title + '" loading="lazy" />' : '') +
+            (pick.coverImg ? '<img class="bk-pick-cover" src="' + proxyCover(pick.coverImg) + '" alt="' + pick.title + '" loading="lazy" />' : '') +
             '  <div class="bk-pick-title">' + pick.title + '</div>' +
             '  <div class="bk-pick-author">' + pickDesc + '</div>' +
             '  <div class="bk-pick-desc">마법사의 서재가 오늘 당신에게 건네는 한 권입니다<br/>클릭하면 알라딘에서 자세히 볼 수 있습니다</div>' +
@@ -249,7 +255,7 @@
             }
             var badge = b.isChoice ? '<div class="bk-badge">Choice</div>' : '';
             card.innerHTML =
-              (b.coverImg ? '<img class="bk-cover" src="' + b.coverImg + '" alt="' + b.title + '" loading="lazy" />' : '') +
+              (b.coverImg ? '<img class="bk-cover" src="' + proxyCover(b.coverImg) + '" alt="' + b.title + '" loading="lazy" />' : '') +
               '<div class="bk-title">' + b.title + '</div>' +
               (b.author ? '<div class="bk-author">' + b.author + '</div>' : '') +
               (stars ? '<div class="bk-rating">' + stars + ' ' + b.rating + '</div>' : '') +
