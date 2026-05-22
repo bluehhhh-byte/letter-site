@@ -151,6 +151,11 @@
     .rd-btn-play:hover { border-color:var(--gold); background:rgba(201,169,110,0.1); }
     .rd-btn-play.playing { border-color:var(--gold); }
     .rd-btn-shuffle { font-size:1rem; }
+    .rd-mute-hint {
+      font-family:var(--font-sans); font-size:.55rem;
+      color:var(--text-muted); letter-spacing:.1em;
+      animation:fadeInOut 3s ease-in-out infinite;
+    }
 
     /* Track list */
     .rd-list-toggle {
@@ -261,6 +266,7 @@
       <button class="rd-btn" id="rdNext" title="다음 곡">⏭</button>
       <button class="rd-btn rd-btn-shuffle" id="rdShuffle" title="셔플">🔀</button>
     </div>
+    <div class="rd-mute-hint" id="rdMuteHint">▶ 버튼을 누르면 음악이 들려요</div>
 
     <!-- Track list toggle -->
     <button class="rd-list-toggle" id="rdListToggle">전체 재생목록</button>
@@ -289,6 +295,7 @@
     var player = null;
     var isPlaying = false;
     var isShuffle = false;
+    var hasUnmuted = false;
     var commentIdx = Math.floor(Math.random() * COMMENTS.length);
 
     var titleEl = document.getElementById('rdTitle');
@@ -345,7 +352,14 @@
     function playPause() {
       if (!player) return;
       if (isPlaying) { player.pauseVideo(); }
-      else { player.playVideo(); }
+      else {
+        if (!hasUnmuted) {
+          hasUnmuted = true;
+          player.unMute();
+          document.getElementById('rdMuteHint').style.display = 'none';
+        }
+        player.playVideo();
+      }
     }
 
     function nextTrack() {
