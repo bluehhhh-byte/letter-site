@@ -348,7 +348,7 @@
         tonearmEl.classList.remove('playing');
         eqEl.classList.remove('active');
         if (event.data === YT.PlayerState.ENDED) {
-          player.playVideoAt(Math.floor(Math.random() * PLAYLIST_IDS.length));
+          player.loadVideoById(PLAYLIST_IDS[Math.floor(Math.random() * PLAYLIST_IDS.length)]);
         }
       }
     }
@@ -368,18 +368,32 @@
       document.getElementById('rdMuteHint').style.display = 'none';
       document.removeEventListener('click', handleFirstTap);
       document.removeEventListener('touchstart', handleFirstTap);
-      player.loadPlaylist(PLAYLIST_IDS, initialRandomIdx);
+      player.loadVideoById(PLAYLIST_IDS[initialRandomIdx]);
     }
 
     function nextTrack() {
       if (!player) return;
-      if (isShuffle) { player.playVideoAt(Math.floor(Math.random() * PLAYLIST_IDS.length)); }
-      else { player.nextVideo(); }
+      var curId;
+      try { curId = player.getVideoData().video_id; } catch(e) {}
+      var curIdx = curId ? PLAYLIST_IDS.indexOf(curId) : -1;
+      if (isShuffle) {
+        var idx;
+        do { idx = Math.floor(Math.random() * PLAYLIST_IDS.length); }
+        while (PLAYLIST_IDS.length > 1 && idx === curIdx);
+        player.loadVideoById(PLAYLIST_IDS[idx]);
+      } else {
+        var next = (curIdx + 1) % PLAYLIST_IDS.length;
+        player.loadVideoById(PLAYLIST_IDS[next]);
+      }
     }
 
     function prevTrack() {
       if (!player) return;
-      player.previousVideo();
+      var curId;
+      try { curId = player.getVideoData().video_id; } catch(e) {}
+      var curIdx = curId ? PLAYLIST_IDS.indexOf(curId) : -1;
+      var prev = curIdx < 0 ? Math.floor(Math.random() * PLAYLIST_IDS.length) : (curIdx - 1 + PLAYLIST_IDS.length) % PLAYLIST_IDS.length;
+      player.loadVideoById(PLAYLIST_IDS[prev]);
     }
 
     function toggleShuffle() {
@@ -404,8 +418,12 @@
           onStateChange: onPlayerStateChange,
           onError: function(e) {
             var msgs = { 2:'재생목록 형식 오류', 5:'플레이어 오류', 100:'찾을 수 없는 영상', 101:'임베드 제한', 150:'임베드 제한' };
-            titleEl.textContent = '주파수가 흐트러졌어요';
-            artistEl.textContent = msgs[e.data] || '오류 코드: ' + e.data;
+            if (e.data === 2 || e.data === 5 || e.data === 100) {
+              player.loadVideoById(PLAYLIST_IDS[Math.floor(Math.random() * PLAYLIST_IDS.length)]);
+            } else {
+              titleEl.textContent = '주파수가 흐트러졌어요';
+              artistEl.textContent = msgs[e.data] || '오류 코드: ' + e.data;
+            }
           }
         }
       });

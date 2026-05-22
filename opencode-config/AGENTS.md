@@ -18,9 +18,8 @@ Build and maintain a Korean web app (letter-site) with oracle (365 poems) & taro
 - All commits pushed to `github.com/bluehhhh-byte/letter-site.git` (HEAD: `27ccddc`)
 
 ## Next Steps
-1. Set `GEMINI_API_KEY` env var in Vercel dashboard (new key or `AIzaSyCI0PZcPZAW7SYjNxkyfEVaunqa5GZlGF0`)
-2. Deploy on Vercel
-3. Test live site
+1. Deploy on Vercel
+2. Test live site
 
 ## Key Files
 - `letter-site/api/reading.js` — Vercel serverless function (Gemini 2.0-flash → JSON `{title,text,detail}`)
