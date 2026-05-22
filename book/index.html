@@ -54,14 +54,14 @@
       text-decoration:none; color:var(--text); text-align:left;
       animation:bkFadeIn .6s ease forwards; opacity:0;
     }
-    .bk-card:nth-child(1) { animation-delay:.05s; }
-    .bk-card:nth-child(2) { animation-delay:.1s; }
-    .bk-card:nth-child(3) { animation-delay:.15s; }
-    .bk-card:nth-child(4) { animation-delay:.2s; }
-    .bk-card:nth-child(5) { animation-delay:.25s; }
-    .bk-card:nth-child(6) { animation-delay:.3s; }
-    .bk-card:nth-child(7) { animation-delay:.35s; }
-    .bk-card:nth-child(8) { animation-delay:.4s; }
+    .bk-card .bk-rank {
+      font-family:var(--font-sans); font-size:.55rem; color:var(--gold-dim);
+      min-width:1.5rem; text-align:center; line-height:1.2;
+      border-right:1px solid var(--border); padding-right:.6rem;
+      margin-right:.6rem; display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+    }
+    .bk-card .bk-rank-num { font-size:1.1rem; font-weight:400; }
     @keyframes bkFadeIn { to { opacity:1; transform:translateY(0); } from { opacity:0; transform:translateY(12px); } }
     @media (hover:hover) {
       .bk-card:hover { border-color:var(--gold-dim); transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,0.2); }
@@ -206,16 +206,16 @@
   </nav>
 
   <div class="bk-body" id="bkBody">
-    <p class="bk-loading" id="bkLoading">별빛 아래 책을 꺼내는 중...</p>
+    <p class="bk-loading" id="bkLoading">북플 베스트를 불러오는 중...</p>
   </div>
 
   <div class="footer">그리움이 닿는 곳</div>
 
   <script>
     var NARRATIVES = [
-      '당신이 이 책을 읽으며 따뜻한 밤을 보내길 바라는 마음으로<br/>마법사의 서재에서 <em>신간</em>을 꺼내왔습니다',
-      '지금 내 곁엔 없지만,<br/>이 페이지 너머로 전하는 <em>문장</em>이 당신에게 닿기를',
-      '마법사가 엮은 오늘의 <em>추천</em>입니다<br/>당신의 책꽂이에 새 이야기가 찾아갑니다'
+      '리뷰와 100자평, 서재 이용자의 구매·보관 내역, 북플 좋아요를 반영한<br/>독서 마니아들이 사랑한 <em>북플 베스트</em> 도서입니다',
+      '마법사의 서재가 전하는 <em>북플 베스트</em><br/>당신의 책꽂이에 새 이야기가 찾아갑니다',
+      '많은 독자들이 선택한 <em>베스트</em> 도서를<br/>마법사의 서재에서 만나보세요'
     ];
 
     var body = document.getElementById('bkBody');
@@ -325,8 +325,8 @@
     }
 
     function bkCardHtml(b) {
-      var badge = b.isChoice ? '<div class="bk-badge">Choice</div>' : '';
-      return badge +
+      var rankBadge = b.rank ? '<div class="bk-rank"><span class="bk-rank-num">' + b.rank + '</span>위</div>' : '';
+      return rankBadge +
         (b.coverImg ? '<div class="bk-cover-wrap"><img class="bk-cover" src="' + proxyCover(b.coverImg) + '" alt="' + b.title + '" loading="lazy" onerror="this.style.display=\'none\';this.parentElement.style.display=\'none\'" /></div>' : '') +
         '<div class="bk-info">' +
         '<div class="bk-title">' + b.title + '</div>' +
@@ -347,35 +347,15 @@
         body.insertAdjacentHTML('beforeend', '<div class="bk-error">이 분야의 책이 아직 없습니다</div>');
         return;
       }
-      var shuffled = shuffleArray([].concat(filtered));
-      var pick = shuffled[0];
-      var pickHtml =
-        '<a href="' + pick.detailUrl + '" target="_blank" rel="noopener" class="bk-pick">' +
-        (pick.coverImg ? '  <div class="bk-pick-cover-wrap"><img class="bk-pick-cover" src="' + proxyCover(pick.coverImg) + '" alt="' + pick.title + '" loading="lazy" onerror="this.style.display=\'none\';this.parentElement.style.display=\'none\'" /></div>' : '') +
-        '  <div class="bk-pick-info">' +
-        '    <div class="bk-pick-label">✦ 오늘의 선택</div>' +
-        '    <div class="bk-pick-title">' + pick.title + '</div>' +
-        '    <div class="bk-pick-author">' + pick.author + '</div>' +
-        '    <div class="bk-pick-meta">' +
-        (pick.nationality ? '      <span>국적</span> ' + pick.nationality + ' · ' : '') +
-        '      <span>장르</span> ' + extractGenre(pick) +
-        '      · <span>발행</span> ' + pick.year +
-        '      · <span>출판</span> ' + pick.publisher +
-        '    </div>' +
-        '    <div class="bk-pick-desc">' + pick.summary + '</div>' +
-        '  </div>' +
-        '</a>';
-      body.insertAdjacentHTML('beforeend', pickHtml);
-
       body.insertAdjacentHTML('beforeend', '<div class="bk-grid" id="bkGrid"></div>');
       var grid = document.getElementById('bkGrid');
-      var remaining = filtered.slice(1, 9);
-      remaining.forEach(function(b) {
+      filtered.forEach(function(b) {
         var card = document.createElement('a');
         card.className = 'bk-card';
         card.href = b.detailUrl;
         card.target = '_blank';
         card.rel = 'noopener';
+        card.style.animationDelay = (Math.random() * 0.6) + 's';
         card.innerHTML = bkCardHtml(b);
         grid.appendChild(card);
       });
@@ -387,7 +367,7 @@
         body.insertAdjacentHTML('beforeend', '<div class="bk-error">아직 책이 도착하지 않았습니다</div>');
         return;
       }
-      allBooks = data.books;
+      allBooks = data.books.map(function(b, i) { b.rank = b.rank || (i + 1); return b; });
       currentGenre = '전체';
 
       body.insertAdjacentHTML('beforeend',
@@ -407,8 +387,8 @@
       if (location.protocol === 'file:') {
         var params = new URLSearchParams({
           ttbkey: 'ttbbluehhhh1424001',
-          QueryType: 'ItemNewSpecial',
-          MaxResults: '20',
+          QueryType: 'BlogBest',
+          MaxResults: '50',
           start: '1',
           SearchTarget: 'Book',
           output: 'js',
@@ -426,9 +406,9 @@
         })
         .then(function(data) {
           if (data.item) {
-            data.item.sort(function(a, b) { return (b.salesPoint || 0) - (a.salesPoint || 0); });
             renderBooks({ books: data.item.map(function(item, i) {
               return {
+                rank: i + 1,
                 title: item.title || '',
                 author: item.author || '',
                 publisher: item.publisher || '',
@@ -437,8 +417,7 @@
                 summary: item.description || '',
                 coverImg: item.cover || '',
                 detailUrl: item.link || '',
-                salesPoint: item.salesPoint || 0,
-                isChoice: i === 0
+                salesPoint: item.salesPoint || 0
               };
             })});
           } else if (data.books) {

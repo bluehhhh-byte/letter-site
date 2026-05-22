@@ -7,15 +7,11 @@ export default async function handler(req, res) {
   }
 
   try {
-    let data = await fetchAladin('ItemNewSpecial', 20);
-    if (!data || !data.item || data.item.length === 0) {
-      data = await fetchAladin('ItemEditorChoice', 20);
-    }
-
-    let items = data?.item || [];
-    items.sort((a, b) => (b.salesPoint || 0) - (a.salesPoint || 0));
+    const data = await fetchAladin('BlogBest', 50);
+    const items = data?.item || [];
 
     const books = items.map((item, i) => ({
+      rank: i + 1,
       title: item.title || '',
       author: item.author || '',
       publisher: item.publisher || '',
@@ -24,8 +20,7 @@ export default async function handler(req, res) {
       summary: item.description || '',
       coverImg: item.cover || '',
       detailUrl: item.link || '',
-      salesPoint: item.salesPoint || 0,
-      isChoice: i === 0
+      salesPoint: item.salesPoint || 0
     }));
 
     res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=3600');
