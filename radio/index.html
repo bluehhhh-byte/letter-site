@@ -297,6 +297,7 @@
     var isPlaying = false;
     var isShuffle = true;
     var hasUnmuted = false;
+    var isFirstPlay = true;
     var commentIdx = Math.floor(Math.random() * COMMENTS.length);
     var initialRandomIdx = Math.floor(Math.random() * 200);
 
@@ -327,6 +328,11 @@
 
     function onPlayerStateChange(event) {
       if (event.data === YT.PlayerState.PLAYING) {
+        if (isFirstPlay && isShuffle && IS_PLAYLIST) {
+          isFirstPlay = false;
+          player.playVideoAt(initialRandomIdx);
+          return;
+        }
         isPlaying = true;
         playBtn.textContent = '⏸';
         playBtn.classList.add('playing');
@@ -370,9 +376,11 @@
       document.getElementById('rdMuteHint').style.display = 'none';
       document.removeEventListener('click', handleFirstTap);
       document.removeEventListener('touchstart', handleFirstTap);
-      if (isShuffle && IS_PLAYLIST) {
-        player.loadPlaylist({ list: PLAY_LIST_ID, listType: 'playlist', index: initialRandomIdx });
+      if (IS_PLAYLIST) {
+        isFirstPlay = isShuffle;
+        player.loadPlaylist({ list: PLAY_LIST_ID, listType: 'playlist' });
       } else {
+        player.cueVideoById(PLAY_LIST_ID);
         player.playVideo();
       }
     }
@@ -412,11 +420,6 @@
         },
         events: {
           onReady: function() {
-            if (IS_PLAYLIST) {
-              player.cuePlaylist({ list: PLAY_LIST_ID, listType: 'playlist' });
-            } else {
-              player.cueVideoById(PLAY_LIST_ID);
-            }
           },
           onStateChange: onPlayerStateChange,
           onError: function(e) {
