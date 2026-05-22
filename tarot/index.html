@@ -456,15 +456,13 @@
       return p;
     }
 
-    function openAIInterpretation() {
+    async function openAIInterpretation() {
       const text = buildAIPrompt();
       if (!text) return;
-      navigator.clipboard.writeText(text);
-      const url = 'https://www.google.com/search?q=' + encodeURIComponent(text) + '&udm=50&source=hp';
-      window.open(url, '_blank');
-      const btn=document.getElementById('resultAIBtn');
-      btn.textContent='✅ 복사됨';
-      setTimeout(()=>{ btn.textContent='🤖 AI 해석'; },2000);
+      try { await navigator.clipboard.writeText(text); } catch(e) {}
+      const q = '타로 리딩 분석 ' + _lastCardData.map((d,i)=>`${i+1}.${d.card.name}`).join(' ');
+      const url = 'https://www.google.com/search?q=' + encodeURIComponent(q) + '&udm=50&source=hp';
+      location.href = url;
     }
 
     function shuffleGrid(){
