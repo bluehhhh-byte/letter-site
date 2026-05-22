@@ -341,7 +341,7 @@
     // YouTube IFrame API
     function onYouTubeIframeAPIReady() {
       player = new YT.Player('player', {
-        height: '1', width: '1',
+        height: 240, width: 360,
         playerVars: {
           iv_load_policy: 3,
           modestbranding: 1,
@@ -353,14 +353,18 @@
         },
         events: {
           onReady: function() {
-            player.mute();
-            player.loadPlaylist(PLAYLIST.map(function(t) { return t.id; }));
-            player.unMute();
+            var ids = PLAYLIST.map(function(t) { return t.id; });
+            player.cuePlaylist({ list: ids, listType: 'playlist', index: 0 });
+            setTimeout(function() {
+              player.mute();
+              player.playVideo();
+              setTimeout(function() { player.unMute(); }, 300);
+            }, 800);
           },
           onStateChange: onPlayerStateChange,
-          onError: function() {
-            titleEl.textContent = '주파수가 흐트러졌어요';
-            artistEl.textContent = '다시 시도해 주세요';
+          onError: function(e) {
+            titleEl.textContent = '주파수가 흐트러졌어요 (' + e.data + ')';
+            artistEl.textContent = '잠시 후 다시 시도해 주세요';
           }
         }
       });
