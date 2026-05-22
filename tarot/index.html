@@ -26,7 +26,7 @@
     .tarot-header .step-indicator span { color:var(--gold); }
 
     /* ================ BODY ================ */
-    .tarot-body { padding:5rem 1.5rem 2rem; min-height:100vh; display:flex; flex-direction:column; align-items:center; overscroll-behavior:none; max-width:100vw; overflow-x:hidden; }
+    .tarot-body { padding:5rem 1.5rem 8rem; min-height:100vh; display:flex; flex-direction:column; align-items:center; overscroll-behavior:none; max-width:100vw; overflow-x:hidden; }
 
     /* Question input */
     .question-area { width:100%; max-width:560px; margin:.8rem auto 1.5rem; text-align:center; }
@@ -142,7 +142,7 @@
     .result-card .rc-meaning { font-family:var(--font-serif); font-size:.85rem; line-height:1.8; color:var(--text); font-weight:300; }
     .result-card .rc-pos-desc { font-family:var(--font-sans); font-size:.65rem; color:var(--text-muted); margin-top:.6rem; font-style:italic; }
 
-    .result-actions { text-align:center; padding:1rem 0 2rem; display:flex; gap:.5rem; justify-content:center; flex-wrap:wrap; }
+    .result-actions { text-align:center; padding:1rem 0 7rem; display:flex; gap:.5rem; justify-content:center; flex-wrap:wrap; }
     .result-btn { padding:.7rem 1.8rem; border:1px solid rgba(201,169,110,0.3); background:transparent; color:var(--text-dim); font-family:var(--font-sans); font-size:.7rem; letter-spacing:.15em; cursor:pointer; transition:all .3s; -webkit-touch-callout:none; }
     @media (hover:hover) { .result-btn:hover { border-color:var(--gold); color:var(--gold); } }
     .result-btn.primary { border-color:var(--gold); color:var(--gold); }
@@ -171,7 +171,7 @@
       .tarot-header h1 { font-size:.8rem; }
       .tarot-header .back-link { font-size:.65rem; }
       .tarot-header .step-indicator { font-size:.6rem; }
-      .tarot-body { padding:3.8rem .4rem 1rem; }
+      .tarot-body { padding:3.8rem .4rem 7rem; }
       .tarot-grid { grid-template-columns:repeat(auto-fill,minmax(48px,1fr)); gap:.25rem; }
       .tarot-card { border-radius:3px; border-width:1px; }
       .tarot-card .card-pattern { inset:1.5px; }
@@ -209,7 +209,7 @@
     }
     @media (max-width:374px) {
       .tarot-grid { grid-template-columns:repeat(auto-fill,minmax(42px,1fr)); gap:.2rem; }
-      .tarot-body { padding:3.5rem .3rem .8rem; }
+      .tarot-body { padding:3.5rem .3rem 7rem; }
       .tarot-header { padding:.4rem .5rem; }
       .tarot-header h1 { font-size:.7rem; }
       .result-overlay { padding:.4rem; }
@@ -217,7 +217,7 @@
     @media (min-width:481px) and (max-width:768px) {
       .tarot-header { padding:.7rem 1.2rem; }
       .tarot-grid { grid-template-columns:repeat(auto-fill,minmax(68px,1fr)); gap:.4rem; }
-      .tarot-body { padding:4.8rem 1rem 1.5rem; }
+      .tarot-body { padding:4.8rem 1rem 7rem; }
     }
     @media (min-width:769px) and (max-width:1024px) {
       .tarot-grid { grid-template-columns:repeat(auto-fill,minmax(78px,1fr)); gap:.45rem; }
@@ -225,9 +225,9 @@
     @media (min-width:900px) { .tarot-grid { grid-template-columns:repeat(10,1fr); } }
     @supports (padding:max(0px)) {
       .tarot-header { padding-left:max(.85rem,env(safe-area-inset-left)); padding-right:max(.85rem,env(safe-area-inset-right)); }
-      .tarot-body { padding-left:max(1.5rem,env(safe-area-inset-left)); padding-right:max(1.5rem,env(safe-area-inset-right)); padding-bottom:max(2rem,env(safe-area-inset-bottom)); }
-      .result-overlay { padding-left:max(2rem,env(safe-area-inset-left)); padding-right:max(2rem,env(safe-area-inset-right)); padding-bottom:max(2rem,env(safe-area-inset-bottom)); }
-      .result-actions { padding-bottom:max(1rem,env(safe-area-inset-bottom)); }
+      .tarot-body { padding-left:max(1.5rem,env(safe-area-inset-left)); padding-right:max(1.5rem,env(safe-area-inset-right)); padding-bottom:max(7rem,env(safe-area-inset-bottom)); }
+      .result-overlay { padding-left:max(2rem,env(safe-area-inset-left)); padding-right:max(2rem,env(safe-area-inset-right)); padding-bottom:max(7rem,env(safe-area-inset-bottom)); }
+      .result-actions { padding-bottom:max(5rem,env(safe-area-inset-bottom)); }
     }
   </style>
 </head>
