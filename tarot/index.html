@@ -438,34 +438,33 @@
     resultRedrawBtn.addEventListener('click',()=>{ shuffleGrid(); resetSelection(); window.scrollTo({top:0,behavior:'smooth'}); });
     document.getElementById('resultAIBtn').addEventListener('click', openAIInterpretation);
 
-    function buildPromptText() {
+    function buildAIPrompt() {
       if (!_lastCardData) return '';
       const hasQ = _lastQuestion && _lastQuestion !== '질문없음';
-      let text = hasQ ? `타로 리딩 분석해줘. 질문: "${_lastQuestion}"\n\n` : '타로 리딩 분석해줘.\n\n';
-      text += `스프레드: ${currentSpread.label} (${currentSpread.name})\n`;
-      text += `해석: ${_lastReading?.text || ''}\n\n`;
+      let p = '';
+      if (hasQ) p += `질문: "${_lastQuestion}"\n\n`;
+      p += `타로 카드 리딩 결과를 분석해주세요.\n`;
+      p += `스프레드: ${currentSpread.label} (${currentSpread.name})\n\n`;
       _lastCardData.forEach((d,i)=>{
         const c=d.card;
-        text += `- ${d.posName}: ${c.name} (${c.nameEn}) ${d.reversed ? '역방향' : '정방향'}\n`;
-        text += `  의미: ${d.reversed ? c.reversed : c.upright}\n\n`;
+        const el = c.element || '메이저';
+        p += `${i+1}. ${d.posName}: ${c.name} (${c.nameEn}) · ${d.reversed ? '역방향' : '정방향'} · ${el}\n`;
+        p += `   ${d.reversed ? c.reversed : c.upright}\n\n`;
       });
-      text += `이 카드들의 조합과 흐름을 종합적으로 분석해줘.`;
-      return text;
+      p += `위 카드들의 조합과 흐름을 종합적으로 해석해주세요.\n`;
+      p += `차분하고 따뜻한 말투로 부드럽게 설명해주시면 감사하겠습니다. 😊`;
+      return p;
     }
 
     function openAIInterpretation() {
-      const text = _lastReading ? `타로 리딩 분석:\n${_lastReading.title}\n${_lastReading.text}\n${_lastReading.detail}` : buildPromptText();
+      const text = buildAIPrompt();
       if (!text) return;
-      navigator.clipboard.writeText(text).then(()=>{
-        const btn=document.getElementById('resultAIBtn');
-        btn.textContent='✅ 복사됨';
-        setTimeout(()=>{ btn.textContent='🤖 AI 해석'; },2000);
-      }).catch(()=>{
-        const btn=document.getElementById('resultAIBtn');
-        btn.textContent='❌ 재시도';
-        setTimeout(()=>{ btn.textContent='🤖 AI 해석'; },2000);
-      });
-      window.open('https://www.google.com','_blank');
+      navigator.clipboard.writeText(text);
+      const short = '타로 리딩 분석 ' + _lastCardData.map(d => d.card.name).slice(0,3).join(' ');
+      window.open('https://www.google.com/search?q=' + encodeURIComponent(short) + '&source=hp','_blank');
+      const btn=document.getElementById('resultAIBtn');
+      btn.textContent='✅ 복사됨';
+      setTimeout(()=>{ btn.textContent='🤖 AI 해석'; },2000);
     }
 
     function shuffleGrid(){
@@ -539,16 +538,6 @@
       } else {
         lines.push(`메이저 위주 — 정신적·운명적 에너지가 강하게 작용 중입니다.`);
       }
-
-      // 5 — 핵심 조언
-      const first = cards[0];
-      const last = cards[cards.length-1];
-      const trim = (s,n=20) => s.length > n ? s.slice(0,n)+'…' : s;
-      let advice = `★ ${first.posName}: ${first.card.name} — ${trim(getMeaning(first.card, first.reversed))}`;
-      if (cards.length > 1) {
-        advice += `\n★ ${last.posName}: ${last.card.name} — ${trim(getMeaning(last.card, last.reversed))}`;
-      }
-      lines.push(advice);
 
       const elemStr = Object.entries(elemCount).map(([k,v])=>`${k} ${v}개`).join(', ')||'—';
       const detail = `메이저 ${majorCount}장 · 역방향 ${revCount}장 · ${cards.length}장 · ${elemStr}`;
