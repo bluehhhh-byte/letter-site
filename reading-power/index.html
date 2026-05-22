@@ -47,13 +47,20 @@
     .rp-card .rp-title {
       font-family:var(--font-serif); font-size:.9rem;
       font-weight:400; color:var(--text); line-height:1.5;
+      display:block;
     }
     .rp-card .rp-title em { font-style:normal; color:var(--gold); }
+    .rp-card .rp-author {
+      font-family:var(--font-sans); font-size:.6rem;
+      color:var(--text-dim); display:block; margin-top:.15rem;
+      letter-spacing:.03em;
+    }
     @keyframes rpFadeIn { to { opacity:1; transform:translateY(0); } from { opacity:0; transform:translateY(10px); } }
     @media (hover:hover) {
       .rp-card:hover { border-color:var(--gold-dim); border-left-color:var(--gold); transform:translateX(4px); box-shadow:0 4px 20px rgba(0,0,0,0.2); }
     }
     .rp-card:active { transform:scale(0.97); }
+    .rp-card .rp-info { flex:1; min-width:0; }
     .rp-card .rp-dot {
       width:4px; height:4px; border-radius:50%; background:var(--gold-dim);
       flex-shrink:0; opacity:0.5;
@@ -104,23 +111,23 @@
 
   <script>
     const books = [
-      { icon: '📖', title: '고양이를 버리다 · 아버지에 대해 이야기할 때' },
-      { icon: '📖', title: '끝까지 남겨두는 그 마음' },
-      { icon: '📖', title: '거울나라의 앨리스' },
-      { icon: '📖', title: '데미안' },
-      { icon: '📖', title: '독일인의 사랑' },
-      { icon: '📖', title: '빨강 머리 앤' },
-      { icon: '📖', title: '사슴' },
-      { icon: '📖', title: '야간 비행' },
-      { icon: '📖', title: '어린 왕자' },
-      { icon: '📖', title: '오만과 편견' },
-      { icon: '📖', title: '오셀로' },
-      { icon: '📖', title: '오즈의 마법사' },
-      { icon: '📖', title: '이상한 나라의 앨리스' },
-      { icon: '📖', title: '자기만의 방' },
-      { icon: '📖', title: '청춘은 아름다워' },
-      { icon: '📖', title: '키다리 아저씨' },
-      { icon: '📖', title: '탈무드' }
+      { icon: '📖', title: '고양이를 버리다 · 아버지에 대해 이야기할 때', author: '무라카미 하루키' },
+      { icon: '📖', title: '끝까지 남겨두는 그 마음', author: '정도언' },
+      { icon: '📖', title: '거울나라의 앨리스', author: '루이스 캐럴' },
+      { icon: '📖', title: '데미안', author: '헤르만 헤세' },
+      { icon: '📖', title: '독일인의 사랑', author: '맥스 뮐러' },
+      { icon: '📖', title: '빨강 머리 앤', author: '루시 모드 몽고메리' },
+      { icon: '📖', title: '사슴', author: '백석' },
+      { icon: '📖', title: '야간 비행', author: '앙투안 드 생텍쥐페리' },
+      { icon: '📖', title: '어린 왕자', author: '앙투안 드 생텍쥐페리' },
+      { icon: '📖', title: '오만과 편견', author: '제인 오스틴' },
+      { icon: '📖', title: '오셀로', author: '윌리엄 셰익스피어' },
+      { icon: '📖', title: '오즈의 마법사', author: '라이먼 프랭크 바움' },
+      { icon: '📖', title: '이상한 나라의 앨리스', author: '루이스 캐럴' },
+      { icon: '📖', title: '자기만의 방', author: '버지니아 울프' },
+      { icon: '📖', title: '청춘은 아름다워', author: '헤르만 헤세' },
+      { icon: '📖', title: '키다리 아저씨', author: '진 웹스터' },
+      { icon: '📖', title: '탈무드', author: '유대인 현자들' }
     ];
 
     const grid = document.getElementById('rpGrid');
@@ -128,7 +135,7 @@
       const card = document.createElement('div');
       card.className = 'rp-card';
       card.style.animationDelay = (i * 0.04) + 's';
-      card.innerHTML = `<span class="rp-icon">${b.icon}</span><span class="rp-title">${b.title}</span>`;
+      card.innerHTML = `<span class="rp-icon">${b.icon}</span><div class="rp-info"><span class="rp-title">${b.title}</span><span class="rp-author">${b.author}</span></div>`;
       grid.appendChild(card);
     });
 
