@@ -452,7 +452,7 @@
         p += `   ${d.reversed ? c.reversed : c.upright}\n\n`;
       });
       p += `위 카드들의 조합과 흐름을 종합적으로 해석해주세요.\n`;
-      p += `차분하고 따뜻한 말투로 부드럽게 설명해주시면 감사하겠습니다. 😊`;
+      p += `차분하고 따뜻한 말투로 부드럽게 설명해주세요.`;
       return p;
     }
 
@@ -460,8 +460,8 @@
       const text = buildAIPrompt();
       if (!text) return;
       navigator.clipboard.writeText(text);
-      const short = '타로 리딩 분석 ' + _lastCardData.map(d => d.card.name).slice(0,3).join(' ');
-      window.open('https://www.google.com/search?q=' + encodeURIComponent(short) + '&source=hp','_blank');
+      const url = 'https://www.google.com/search?q=' + encodeURIComponent(text) + '&udm=50&source=hp';
+      window.open(url, '_blank');
       const btn=document.getElementById('resultAIBtn');
       btn.textContent='✅ 복사됨';
       setTimeout(()=>{ btn.textContent='🤖 AI 해석'; },2000);
