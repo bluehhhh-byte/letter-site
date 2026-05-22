@@ -212,44 +212,50 @@
       return '/api/cover?url=' + encodeURIComponent(url);
     }
 
+    var ALADIN_API = 'https://www.aladin.co.kr/ttb/api/ItemList.aspx';
+
     var MOCK_BOOKS = [
-      { title:'아몬드', author:'손원평', nationality:'한국', genre:'소설', year:'2017', publisher:'창비',
+      { title:'아몬드', author:'손원평', nationality:'한국', genre:'소설', year:'2017', publisher:'창비', salesPoint:73950,
         coverImg:'https://image.aladin.co.kr/product/16958/43/cover/8936434121_1.jpg',
-        summary:'세상을 느끼지 못하는 소년 윤재가 할머니와의 사건을 통해 감정을 배워가는 이야기. 아몬드 같은 마음이 조금씩 열리는 과정을 담았다.',
+        summary:'세상을 느끼지 못하는 소년 윤재가 할머니와의 사건을 통해 감정을 배워가는 이야기.',
         detailUrl:'https://www.aladin.co.kr/search/wsearchresult.aspx?SearchTarget=Book&SearchWord=%EC%95%84%EB%AA%AC%EB%93%9C+%EC%86%90%EC%9B%90%ED%8F%89', isChoice:true },
-      { title:'불편한 편의점', author:'김호연', nationality:'한국', genre:'소설', year:'2021', publisher:'나무옆의자',
+      { title:'불편한 편의점', author:'김호연', nationality:'한국', genre:'소설', year:'2021', publisher:'나무옆의자', salesPoint:67015,
         coverImg:'https://image.aladin.co.kr/product/27128/57/cover/8989798213_1.jpg',
-        summary:'서울의 한 편의점을 배경으로 벌어지는 따뜻한 인간 군상 드라마. 각양각색의 손님들이 만들어내는 공감과 치유의 이야기.',
+        summary:'서울의 한 편의점을 배경으로 벌어지는 따뜻한 인간 군상 드라마.',
         detailUrl:'https://www.aladin.co.kr/search/wsearchresult.aspx?SearchTarget=Book&SearchWord=%EB%B6%88%ED%8E%B8%ED%95%9C+%ED%8E%B8%EC%9D%98%EC%A0%90', isChoice:false },
-      { title:'달러구트 꿈 백화점', author:'이미예', nationality:'한국', genre:'판타지', year:'2020', publisher:'팩토리나인',
+      { title:'달러구트 꿈 백화점', author:'이미예', nationality:'한국', genre:'판타지', year:'2020', publisher:'팩토리나인', salesPoint:71270,
         coverImg:'https://image.aladin.co.kr/product/25317/21/cover/1161910345_1.jpg',
-        summary:'꿈을 사고파는 신비한 백화점, 달러구트. 주인공 페니가 꿈을 만드는 사람들과의 교류를 통해 성장하는 판타지 소설.',
+        summary:'꿈을 사고파는 신비한 백화점, 달러구트.',
         detailUrl:'https://www.aladin.co.kr/search/wsearchresult.aspx?SearchTarget=Book&SearchWord=%EB%8B%AC%EB%9F%AC%EA%B5%AC%ED%8A%B8+%EA%BF%88+%EB%B0%B1%ED%99%94%EC%A0%90', isChoice:false },
-      { title:'모순', author:'양귀자', nationality:'한국', genre:'소설', year:'1998', publisher:'쓰다',
+      { title:'모순', author:'양귀자', nationality:'한국', genre:'소설', year:'1998', publisher:'쓰다', salesPoint:34935,
         coverImg:'https://image.aladin.co.kr/product/27/12/cover/8998441011_1.jpg',
-        summary:'인생의 모순과 그 안에서 피어나는 인간의 의지를 그린 작품. 양귀자만의 섬세한 문체로 삶의 진실을 파고든다.',
+        summary:'인생의 모순과 그 안에서 피어나는 인간의 의지를 그린 작품.',
         detailUrl:'https://www.aladin.co.kr/search/wsearchresult.aspx?SearchTarget=Book&SearchWord=%EB%AA%A8%EC%88%9C+%EC%96%91%EA%B7%80%EC%9E%90', isChoice:false },
-      { title:'오늘 밤, 세계에서 이 사랑이 사라진다 해도', author:'이치조 미사키', nationality:'일본', genre:'로맨스', year:'2022', publisher:'모모',
+      { title:'오늘 밤, 세계에서 이 사랑이 사라진다 해도', author:'이치조 미사키', nationality:'일본', genre:'로맨스', year:'2022', publisher:'모모', salesPoint:23720,
         coverImg:'https://image.aladin.co.kr/product/29879/1/cover/1161910345_2.jpg',
-        summary:'기억을 잃어가는 소년과 그를 사랑하는 소녀의 아픈 로맨스. 하루하루 사라져가는 기억 속에서도 피어나는 사랑을 그렸다.',
+        summary:'기억을 잃어가는 소년과 그를 사랑하는 소녀의 아픈 로맨스.',
         detailUrl:'https://www.aladin.co.kr/search/wsearchresult.aspx?SearchTarget=Book&SearchWord=%EC%98%A4%EB%8A%98+%EB%B0%A4+%EC%84%B8%EA%B3%84%EC%97%90%EC%84%9C+%EC%9D%B4+%EC%82%AC%EB%9E%91%EC%9D%B4+%EC%82%AC%EB%9D%BC%EC%A7%84%EB%8B%A4+%ED%95%B4%EB%8F%84', isChoice:false },
-      { title:'세상에서 가장 예쁜 딸에게', author:'전영신', nationality:'한국', genre:'에세이', year:'2021', publisher:'arte',
+      { title:'세상에서 가장 예쁜 딸에게', author:'전영신', nationality:'한국', genre:'에세이', year:'2021', publisher:'arte', salesPoint:27030,
         coverImg:'https://image.aladin.co.kr/product/30147/7/cover/1161910345_3.jpg',
-        summary:'딸에게 전하는 엄마의 따뜻한 편지글. 삶의 지혜와 사랑의 메시지를 담은 에세이가 독자의 마음을 적신다.',
+        summary:'딸에게 전하는 엄마의 따뜻한 편지글.',
         detailUrl:'https://www.aladin.co.kr/search/wsearchresult.aspx?SearchTarget=Book&SearchWord=%EC%84%B8%EC%83%81%EC%97%90%EC%84%9C+%EA%B0%80%EC%9E%A5+%EC%98%88%EC%81%9C+%EB%94%B8%EC%97%90%EA%B2%8C', isChoice:false },
-      { title:'나는 나를 돌봅니다', author:'에이미 B. 셔버', nationality:'미국', genre:'자기계발', year:'2022', publisher:'갤리온',
+      { title:'나는 나를 돌봅니다', author:'에이미 B. 셔버', nationality:'미국', genre:'자기계발', year:'2022', publisher:'갤리온', salesPoint:16860,
         coverImg:'https://image.aladin.co.kr/product/31503/2/cover/1161910345_4.jpg',
-        summary:'스스로를 돌보는 용기에 관한 이야기. 타인의 시선이 아닌 나 자신을 먼저 돌보는 삶의 방식을 제안한다.',
+        summary:'스스로를 돌보는 용기에 관한 이야기.',
         detailUrl:'https://www.aladin.co.kr/search/wsearchresult.aspx?SearchTarget=Book&SearchWord=%EB%82%98%EB%8A%94+%EB%82%98%EB%A5%BC+%EB%8F%8C%EB%B4%85%EB%8B%88%EB%8B%A4', isChoice:false },
-      { title:'아직 오지 않은 날들을 위하여', author:'류시화', nationality:'한국', genre:'시/에세이', year:'2022', publisher:'페이지2',
+      { title:'아직 오지 않은 날들을 위하여', author:'류시화', nationality:'한국', genre:'시/에세이', year:'2022', publisher:'페이지2', salesPoint:12300,
         coverImg:'https://image.aladin.co.kr/product/32201/0/cover/1161910345_5.jpg',
-        summary:'시인이 전하는 내일을 위한 위로의 문장들. 불확실한 미래를 살아가는 이들에게 건네는 따뜻한 응원의 메시지.',
+        summary:'시인이 전하는 내일을 위한 위로의 문장들.',
         detailUrl:'https://www.aladin.co.kr/search/wsearchresult.aspx?SearchTarget=Book&SearchWord=%EC%95%84%EC%A7%81+%EC%98%A4%EC%A7%80+%EC%95%8A%EC%9D%80+%EB%82%A0%EB%93%A4%EC%9D%84+%EC%9C%84%ED%95%98%EC%97%AC', isChoice:false },
-      { title:'잘 살아라, 그게 최고의 복수다', author:'김호연', nationality:'한국', genre:'에세이', year:'2023', publisher:'다산북스',
+      { title:'잘 살아라, 그게 최고의 복수다', author:'김호연', nationality:'한국', genre:'에세이', year:'2023', publisher:'다산북스', salesPoint:24690,
         coverImg:'https://image.aladin.co.kr/product/33005/0/cover/1161910345_6.jpg',
-        summary:'인생의 상처와 아픔을 딛고 잘 살아내는 것이 진정한 복수라는 메시지를 전하는 에세이. 공감과 위로를 건넨다.',
+        summary:'인생의 상처와 아픔을 딛고 잘 살아내는 것이 진정한 복수라는 메시지.',
         detailUrl:'https://www.aladin.co.kr/search/wsearchresult.aspx?SearchTarget=Book&SearchWord=%EC%9E%98+%EC%82%B4%EC%95%84%EB%9D%BC+%EA%B7%B8%EA%B2%8C+%EC%B5%9C%EA%B3%A0%EC%9D%98+%EB%B3%B5%EC%88%98%EB%8B%A4', isChoice:false }
     ];
+
+    function sortBySalesPoint(arr) {
+      return arr.sort(function(a, b) { return (b.salesPoint || 0) - (a.salesPoint || 0); });
+    }
 
     function shuffleArray(arr) {
       for (var i = arr.length - 1; i > 0; i--) {
@@ -326,19 +332,59 @@
       var existing = body.querySelectorAll('.bk-narrative, .bk-pick, .bk-grid, .bk-error, .bk-retry');
       existing.forEach(function(el) { if (el.id !== 'bkLoading') el.remove(); });
 
+      var apiUrl;
       if (location.protocol === 'file:') {
-        renderBooks({ books: MOCK_BOOKS });
-        return;
+        var params = new URLSearchParams({
+          ttbkey: 'ttbbluehhhh1424001',
+          QueryType: 'ItemNewSpecial',
+          MaxResults: '20',
+          start: '1',
+          SearchTarget: 'Book',
+          output: 'js',
+          Version: '20131101'
+        });
+        apiUrl = ALADIN_API + '?' + params;
+      } else {
+        apiUrl = '/api/books';
       }
 
-      fetch('/api/books')
-        .then(function(r) { if (!r.ok) throw new Error('서버 응답 오류'); return r.json(); })
-        .then(function(data) { renderBooks(data); })
-        .catch(function(err) {
-          loading.style.display = 'none';
-          body.insertAdjacentHTML('beforeend',
-            '<div class="bk-error">책을 가져오지 못했습니다<br/>잠시 후 다시 시도해 주세요</div>' +
-            '<button class="bk-retry" onclick="fetchBooks()">다시 시도</button>');
+      fetch(apiUrl)
+        .then(function(r) {
+          if (!r.ok) throw new Error('서버 응답 오류');
+          return r.json();
+        })
+        .then(function(data) {
+          if (data.item) {
+            data.item.sort(function(a, b) { return (b.salesPoint || 0) - (a.salesPoint || 0); });
+            renderBooks({ books: data.item.map(function(item, i) {
+              return {
+                title: item.title || '',
+                author: item.author || '',
+                publisher: item.publisher || '',
+                year: item.pubDate ? item.pubDate.substring(0, 4) : '',
+                genre: item.categoryName || '',
+                summary: item.description || '',
+                coverImg: item.cover || '',
+                detailUrl: item.link || '',
+                salesPoint: item.salesPoint || 0,
+                isChoice: i === 0
+              };
+            })});
+          } else if (data.books) {
+            renderBooks(data);
+          } else {
+            throw new Error('데이터 형식 오류');
+          }
+        })
+        .catch(function() {
+          if (location.protocol === 'file:') {
+            renderBooks({ books: sortBySalesPoint(MOCK_BOOKS) });
+          } else {
+            loading.style.display = 'none';
+            body.insertAdjacentHTML('beforeend',
+              '<div class="bk-error">책을 가져오지 못했습니다<br/>잠시 후 다시 시도해 주세요</div>' +
+              '<button class="bk-retry" onclick="fetchBooks()">다시 시도</button>');
+          }
         });
     }
 
