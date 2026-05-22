@@ -269,7 +269,7 @@
 
   <div class="footer">같은 밤, 같은 주파수 <span>♥</span></div>
 
-  <div id="player" style="position:fixed;opacity:0;pointer-events:none;width:1px;height:1px;overflow:hidden"></div>
+  <div id="player" style="position:absolute;left:-9999px;top:0;width:360px;height:240px;overflow:hidden"></div>
 
   <script src="playlist.js"></script>
   <script>
@@ -337,66 +337,6 @@
         }
       }
     }
-
-    function onPlayerReady() {
-      player.loadPlaylist({ listType:'user_uploads', list:'' });
-    }
-
-    function playPause() {
-      if (!player) return;
-      if (isPlaying) { player.pauseVideo(); }
-      else { player.playVideo(); }
-    }
-
-    function nextTrack() {
-      if (!player) return;
-      if (isShuffle) {
-        var next;
-        do { next = Math.floor(Math.random() * PLAYLIST.length); }
-        while (next === currentIndex && PLAYLIST.length > 1);
-        player.playVideoAt(next);
-      } else {
-        player.nextVideo();
-      }
-    }
-
-    function prevTrack() {
-      if (!player) { return; }
-      player.previousVideo();
-    }
-
-    function toggleShuffle() {
-      isShuffle = !isShuffle;
-      shuffleBtn.style.opacity = isShuffle ? '1' : '0.4';
-    }
-
-    function renderTracklist() {
-      var html = '';
-      PLAYLIST.forEach(function(t, i) {
-        html += '<div class="rd-tracklist-item' + (i === currentIndex ? ' active' : '') + '" data-index="' + i + '">' +
-          '<span class="rd-tracklist-num">' + (i + 1) + '</span>' +
-          '<span class="rd-tracklist-title">' + t.title + '</span>' +
-          '<span class="rd-tracklist-comment">' + t.comment + '</span>' +
-        '</div>';
-      });
-      tracklistEl.innerHTML = html;
-      tracklistEl.querySelectorAll('.rd-tracklist-item').forEach(function(el) {
-        el.addEventListener('click', function() {
-          var idx = parseInt(this.getAttribute('data-index'));
-          if (player) { player.playVideoAt(idx); }
-        });
-      });
-    }
-
-    function toggleTracklist() {
-      tracklistOpen = !tracklistOpen;
-      tracklistEl.classList.toggle('open', tracklistOpen);
-      listToggle.textContent = tracklistOpen ? '재생목록 닫기' : '전체 재생목록';
-    }
-
-    // Init track list
-    renderTracklist();
-    updateTrackInfo(0);
 
     // YouTube IFrame API
     function onYouTubeIframeAPIReady() {
