@@ -162,22 +162,72 @@
   </div>
 
   <script>
+    var API_URL = '/api/wishes';
     var STORAGE_KEY = 'wishes';
+    var pollTimer = null;
 
     function getWishes() {
       try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch(e) { return []; }
     }
 
-    function saveWishes(arr) { localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)); }
+    function saveWishes(arr) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+    }
 
-    // Hash string to deterministic number
+    function mergeWishes(remote) {
+      var local = getWishes();
+      var map = {};
+      local.forEach(function(w) { map[w.text + w.date] = true; });
+      var changed = false;
+      remote.forEach(function(w) {
+        var key = w.text + w.date;
+        if (!map[key]) { map[key] = true; local.push(w); changed = true; }
+      });
+      if (changed) { saveWishes(local); computeStars(); }
+    }
+
+    function fetchWishes() {
+      if (location.protocol === 'file:') return;
+      fetch(API_URL)
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.wishes && data.wishes.length) mergeWishes(data.wishes);
+        })
+        .catch(function() {});
+    }
+
+    function postWish(text) {
+      if (location.protocol === 'file:') {
+        var wList = getWishes();
+        wList.push({ text: text, date: Date.now() });
+        saveWishes(wList);
+        computeStars();
+        return;
+      }
+      fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: text })
+      })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.wish) {
+            var wList = getWishes();
+            wList.push(data.wish);
+            saveWishes(wList);
+            computeStars();
+          }
+          if (data.error) { alert(data.error); }
+        })
+        .catch(function() { alert('별을 빌지 못했습니다.'); });
+    }
+
     function hashStr(s) {
       var h = 0;
       for (var i = 0; i < s.length; i++) { h = ((h << 5) - h) + s.charCodeAt(i); h |= 0; }
       return Math.abs(h);
     }
 
-    // Canvas setup
     var canvas = document.getElementById('constCanvas');
     var ctx = canvas.getContext('2d');
     var W, H;
@@ -202,7 +252,6 @@
       wishes = getWishes();
       wishes.forEach(function(w, i) {
         var h = hashStr(w.text + i);
-        // Distribute stars in a ring/constellation pattern
         var angle = (i / 7) * Math.PI * 2 + (h % 100) * 0.001;
         var radius = 0.15 + (h % 50) * 0.008;
         var cx = W / 2 + Math.cos(angle) * Math.min(W, H) * radius * 0.45;
@@ -218,11 +267,10 @@
         ctx.fillStyle = 'rgba(201,169,110,0.08)';
         ctx.font = '14px Inter, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('아직 별이 없습니다. 별을 빌어보세요.', W/2, H/2);
+        ctx.fillText('아직 별이 없습니다. 빈 곳을 터치해 별을 빌어보세요.', W/2, H/2);
         return;
       }
 
-      // Draw constellation lines (connect nearest neighbors)
       for (var i = 0; i < starData.length; i++) {
         var nearest = [];
         for (var j = 0; j < starData.length; j++) {
@@ -247,12 +295,10 @@
         }
       }
 
-      // Draw stars
       starData.forEach(function(s, i) {
         var glow = 0.15 + 0.1 * Math.sin(pulse + s.phase);
         var isHover = (i === hoverIdx);
 
-        // Glow
         var grad = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 8);
         grad.addColorStop(0, 'rgba(201,169,110,' + (isHover ? 0.3 : glow) + ')');
         grad.addColorStop(1, 'rgba(201,169,110,0)');
@@ -261,7 +307,6 @@
         ctx.arc(s.x, s.y, s.r * 8, 0, Math.PI * 2);
         ctx.fill();
 
-        // Star core
         ctx.fillStyle = isHover ? '#e8d8b0' : '#c9a96e';
         ctx.beginPath();
         ctx.arc(s.x, s.y, isHover ? s.r * 1.8 : s.r, 0, Math.PI * 2);
@@ -283,7 +328,6 @@
       animFrame = requestAnimationFrame(animate);
     }
 
-    // Init
     function initCanvas() {
       resize();
       computeStars();
@@ -296,7 +340,6 @@
       computeStars();
     });
 
-    // Find nearest star to click point
     function findStar(x, y) {
       var minDist = 30;
       var found = -1;
@@ -309,6 +352,8 @@
       return found;
     }
 
+    function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+
     canvas.addEventListener('click', function(e) {
       var rect = canvas.getBoundingClientRect();
       var x = e.clientX - rect.left;
@@ -319,9 +364,15 @@
         document.getElementById('wvWish').textContent = s.wish.text;
         var d = new Date(s.wish.date);
         document.getElementById('wvDate').textContent =
-          d.getFullYear() + '년 ' + (d.getMonth()+1) + '월 ' + d.getDate() + '일에 빈 소원';
+          d.getFullYear() + '년 ' + (d.getMonth()+1) + '월 ' + d.getDate() + '일 ' +
+          pad2(d.getHours()) + ':' + pad2(d.getMinutes()) + '에 빈 소원';
         document.getElementById('wishOverlay').classList.add('open');
         document.body.style.overflow = 'hidden';
+      } else {
+        document.getElementById('wfText').value = '';
+        document.getElementById('wishFormOverlay').classList.add('open');
+        document.body.style.overflow = 'hidden';
+        document.getElementById('wfText').focus();
       }
     });
 
@@ -335,7 +386,6 @@
 
     canvas.addEventListener('mouseleave', function() { hoverIdx = -1; });
 
-    // View overlay close
     document.getElementById('wvClose').addEventListener('click', function() {
       document.getElementById('wishOverlay').classList.remove('open');
       document.body.style.overflow = '';
@@ -347,17 +397,15 @@
       }
     });
 
-    // Show hint briefly
     setTimeout(function() {
       document.getElementById('wishHint').classList.add('show');
-      setTimeout(function() {
-        document.getElementById('wishHint').classList.remove('show');
-      }, 4000);
+      setTimeout(function() { document.getElementById('wishHint').classList.remove('show'); }, 4000);
     }, 1000);
 
-    // Form overlay
     var formOv = document.getElementById('wishFormOverlay');
-    document.getElementById('wishAddBtn').addEventListener('click', function() {
+    var wishAddBtn = document.getElementById('wishAddBtn');
+    wishAddBtn.addEventListener('click', function() {
+      document.getElementById('wfText').value = '';
       formOv.classList.add('open');
       document.body.style.overflow = 'hidden';
       document.getElementById('wfText').focus();
@@ -376,29 +424,34 @@
     document.getElementById('wfSubmit').addEventListener('click', function() {
       var text = document.getElementById('wfText').value.trim();
       if (!text) { alert('소원을 적어주세요.'); return; }
-      var wList = getWishes();
-      wList.push({ text: text, date: Date.now() });
-      saveWishes(wList);
       document.getElementById('wfText').value = '';
       formOv.classList.remove('open');
       document.body.style.overflow = '';
-      computeStars();
+      postWish(text);
     });
 
-    // Stars background
+    document.getElementById('wfText').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        document.getElementById('wfSubmit').click();
+      }
+    });
+
     (function(){
-      var c=document.getElementById('stars');
+      var c = document.getElementById('stars');
       if (c) {
-        for(var i=0;i<60;i++){
-          var s=document.createElement('div'); s.className='star';
-          s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*100+'%';
-          s.style.setProperty('--d',(Math.random()*4+3)+'s');
-          s.style.animationDelay=Math.random()*5+'s'; c.appendChild(s);
+        for (var i = 0; i < 60; i++) {
+          var s = document.createElement('div'); s.className = 'star';
+          s.style.left = Math.random() * 100 + '%'; s.style.top = Math.random() * 100 + '%';
+          s.style.setProperty('--d', (Math.random() * 4 + 3) + 's');
+          s.style.animationDelay = Math.random() * 5 + 's'; c.appendChild(s);
         }
       }
     })();
 
     initCanvas();
+    fetchWishes();
+    pollTimer = setInterval(fetchWishes, 30000);
   </script>
 </body>
 </html>
