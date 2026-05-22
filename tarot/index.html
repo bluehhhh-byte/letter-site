@@ -441,15 +441,15 @@
     function buildPromptText() {
       if (!_lastCardData) return '';
       const hasQ = _lastQuestion && _lastQuestion !== '질문없음';
-      let text = hasQ ? `질문: ${_lastQuestion}\n\n` : '';
-      text += `[타로 리딩 결과] ${_lastReading?.title || ''}\n\n`;
-      text += `리뷰: ${_lastReading?.text || ''}\n\n`;
+      let text = hasQ ? `타로 리딩 분석해줘. 질문: "${_lastQuestion}"\n\n` : '타로 리딩 분석해줘.\n\n';
+      text += `스프레드: ${currentSpread.label} (${currentSpread.name})\n`;
+      text += `해석: ${_lastReading?.text || ''}\n\n`;
       _lastCardData.forEach((d,i)=>{
         const c=d.card;
-        text += `【${d.posName}】 ${c.name} (${c.nameEn}) · ${d.reversed ? '역방향' : '정방향'}\n`;
-        text += `키워드: ${c.keywords || '-'}\n`;
-        text += `${d.reversed ? c.reversed : c.upright}\n\n`;
+        text += `- ${d.posName}: ${c.name} (${c.nameEn}) ${d.reversed ? '역방향' : '정방향'}\n`;
+        text += `  의미: ${d.reversed ? c.reversed : c.upright}\n\n`;
       });
+      text += `이 카드들의 조합과 흐름을 종합적으로 분석해줘.`;
       return text;
     }
 
@@ -458,14 +458,14 @@
       if (!text) return;
       navigator.clipboard.writeText(text).then(()=>{
         const btn=document.getElementById('resultAIBtn');
-        btn.textContent='✅ 복사+이동';
+        btn.textContent='✅ 복사됨';
         setTimeout(()=>{ btn.textContent='🤖 AI 해석'; },2000);
       }).catch(()=>{
         const btn=document.getElementById('resultAIBtn');
         btn.textContent='❌ 재시도';
         setTimeout(()=>{ btn.textContent='🤖 AI 해석'; },2000);
       });
-      window.open('https://gemini.google.com','_blank');
+      window.open('https://www.google.com','_blank');
     }
 
     function shuffleGrid(){
