@@ -295,7 +295,7 @@
 
     var player = null;
     var isPlaying = false;
-    var isShuffle = false;
+    var isShuffle = true;
     var hasUnmuted = false;
     var commentIdx = Math.floor(Math.random() * COMMENTS.length);
 
@@ -408,7 +408,7 @@
         events: {
           onReady: function() {
             if (IS_PLAYLIST) {
-              player.cuePlaylist({ list: PLAY_LIST_ID, listType: 'playlist', index: 0 });
+              player.cuePlaylist({ list: PLAY_LIST_ID, listType: 'playlist', index: Math.floor(Math.random() * 200) });
             } else {
               player.cueVideoById(PLAY_LIST_ID);
             }
@@ -434,7 +434,7 @@
     prevBtn.addEventListener('click', prevTrack);
     nextBtn.addEventListener('click', nextTrack);
     shuffleBtn.addEventListener('click', toggleShuffle);
-    shuffleBtn.style.opacity = '0.4';
+    shuffleBtn.style.opacity = '1';
     listToggle.style.display = 'none';
     tracklistEl.style.display = 'none';
 
