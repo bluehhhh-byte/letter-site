@@ -42,16 +42,16 @@
     }
 
     .bk-grid {
-      display:grid; grid-template-columns:1fr 1fr; gap:.8rem;
-      width:100%;
+      display:grid; grid-template-columns:1fr; gap:1rem;
+      width:100%; max-width:560px;
     }
 
     .bk-card {
-      display:flex; flex-direction:column; align-items:center;
+      display:flex; flex-direction:row; gap:1rem;
       border:1px solid var(--border); background:var(--bg-card);
-      padding:1.2rem 1rem; cursor:pointer;
+      padding:1rem; cursor:pointer;
       transition:all .3s; touch-action:manipulation;
-      text-decoration:none; color:var(--text);
+      text-decoration:none; color:var(--text); text-align:left;
       animation:bkFadeIn .6s ease forwards; opacity:0;
     }
     .bk-card:nth-child(1) { animation-delay:.05s; }
@@ -68,61 +68,82 @@
     }
     .bk-card:active { transform:scale(0.97); }
 
+    .bk-card .bk-cover-wrap {
+      flex-shrink:0; width:80px;
+    }
     .bk-card .bk-cover {
       width:100%; aspect-ratio:3/4; object-fit:cover;
-      border:1px solid rgba(201,169,110,0.08);
-      margin-bottom:.6rem; background:var(--bg);
+      border:1px solid rgba(201,169,110,0.12);
+      background:var(--bg);
     }
+    .bk-card .bk-info { flex:1; min-width:0; }
     .bk-card .bk-title {
-      font-family:var(--font-serif); font-size:.75rem;
-      font-weight:400; line-height:1.4; text-align:center;
-      margin-bottom:.2rem;
+      font-family:var(--font-serif); font-size:.85rem;
+      font-weight:400; color:var(--gold); margin-bottom:.2rem;
     }
     .bk-card .bk-author {
-      font-family:var(--font-sans); font-size:.6rem;
-      color:var(--text-muted); letter-spacing:.05em;
+      font-family:var(--font-sans); font-size:.65rem;
+      color:var(--text-dim); margin-bottom:.3rem;
     }
-    .bk-card .bk-rating {
+    .bk-card .bk-meta {
       font-family:var(--font-sans); font-size:.55rem;
-      color:var(--gold-dim); margin-top:.3rem;
+      color:var(--text-muted); letter-spacing:.05em;
+      display:flex; flex-wrap:wrap; gap:.2rem .5rem;
+    }
+    .bk-card .bk-meta span { color:var(--gold-dim); }
+    .bk-card .bk-summary {
+      font-family:var(--font-serif); font-size:.7rem;
+      line-height:1.6; color:var(--text); font-weight:300;
+      margin-top:.4rem; padding-top:.4rem; border-top:1px solid var(--border);
     }
     .bk-card .bk-badge {
-      font-family:var(--font-sans); font-size:.45rem;
-      letter-spacing:.1em; color:var(--gold); margin-top:.3rem;
-      border:1px solid rgba(201,169,110,0.2); padding:.1rem .4rem;
+      display:inline-block; font-family:var(--font-sans); font-size:.4rem;
+      letter-spacing:.1em; color:var(--gold);
+      border:1px solid rgba(201,169,110,0.2); padding:.05rem .3rem;
+      margin-bottom:.2rem; width:fit-content;
     }
 
-    /* Today's Pick highlight card */
+    /* Today's Pick */
     .bk-pick {
-      width:100%; max-width:480px;
-      display:flex; flex-direction:column; align-items:center;
+      width:100%; max-width:560px;
+      display:flex; flex-direction:row; gap:1.2rem;
       border:1px solid rgba(201,169,110,0.25);
-      background:rgba(201,169,110,0.03); padding:1.5rem 1.2rem;
-      text-align:center; cursor:pointer; text-decoration:none;
-      color:var(--text); transition:all .3s;
+      background:rgba(201,169,110,0.03); padding:1.2rem;
+      cursor:pointer; text-decoration:none;
+      color:var(--text); transition:all .3s; text-align:left;
       animation:bkFadeIn .6s ease forwards; opacity:0;
     }
-    .bk-pick .bk-pick-label {
-      font-family:var(--font-sans); font-size:.55rem;
-      letter-spacing:.2em; color:var(--gold); margin-bottom:.8rem;
+    .bk-pick .bk-pick-cover-wrap {
+      flex-shrink:0; width:100px;
     }
     .bk-pick .bk-pick-cover {
-      width:120px; aspect-ratio:3/4; object-fit:cover;
+      width:100%; aspect-ratio:3/4; object-fit:cover;
       border:1px solid rgba(201,169,110,0.15);
-      margin-bottom:.6rem;
+      background:var(--bg);
+    }
+    .bk-pick .bk-pick-info { flex:1; min-width:0; }
+    .bk-pick .bk-pick-label {
+      font-family:var(--font-sans); font-size:.5rem;
+      letter-spacing:.2em; color:var(--gold); margin-bottom:.4rem;
     }
     .bk-pick .bk-pick-title {
-      font-family:var(--font-serif); font-size:.9rem;
-      font-weight:400; color:var(--gold);
+      font-family:var(--font-serif); font-size:.95rem;
+      font-weight:400; color:var(--gold); margin-bottom:.2rem;
     }
     .bk-pick .bk-pick-author {
       font-family:var(--font-sans); font-size:.65rem;
-      color:var(--text-dim); margin-top:.2rem;
+      color:var(--text-dim); margin-bottom:.3rem;
     }
+    .bk-pick .bk-pick-meta {
+      font-family:var(--font-sans); font-size:.6rem;
+      color:var(--text-muted); margin-bottom:.4rem;
+      display:flex; flex-wrap:wrap; gap:.2rem .5rem;
+    }
+    .bk-pick .bk-pick-meta span { color:var(--gold-dim); }
     .bk-pick .bk-pick-desc {
-      font-family:var(--font-serif); font-size:.7rem;
-      color:var(--text-dim); line-height:1.8;
-      margin-top:.6rem; font-weight:300;
+      font-family:var(--font-serif); font-size:.75rem;
+      color:var(--text); line-height:1.7; font-weight:300;
+      padding-top:.4rem; border-top:1px solid var(--border);
     }
 
     .bk-retry {
@@ -137,15 +158,15 @@
     @media (max-width:480px) {
       body { padding-top:4rem; }
       .bk-body { padding:.5rem 1rem 8rem; gap:1rem; }
-      .bk-grid { gap:.5rem; }
-      .bk-card { padding:.8rem .6rem; }
-      .bk-card .bk-title { font-size:.7rem; }
+      .bk-card { padding:.8rem; gap:.8rem; }
+      .bk-card .bk-cover-wrap { width:60px; }
+      .bk-card .bk-title { font-size:.78rem; }
+      .bk-card .bk-summary { font-size:.65rem; }
+      .bk-card .bk-meta { font-size:.5rem; }
       .bk-narrative { font-size:.75rem; padding:1rem .8rem; }
-      .bk-pick { padding:1rem .8rem; }
-      .bk-pick .bk-pick-cover { width:100px; }
-    }
-    @media (max-width:374px) {
-      .bk-grid { grid-template-columns:1fr; }
+      .bk-pick { padding:.8rem; gap:.8rem; }
+      .bk-pick .bk-pick-cover-wrap { width:80px; }
+      .bk-pick .bk-pick-desc { font-size:.68rem; }
     }
   </style>
 </head>
@@ -186,10 +207,49 @@
     var narrativeIdx = Math.floor(Math.random() * NARRATIVES.length);
 
     function proxyCover(url) {
-      return url && url.startsWith('https://image.aladin.co.kr/')
-        ? '/api/cover?url=' + encodeURIComponent(url)
-        : url;
+      if (!url) return '';
+      if (location.protocol === 'file:') return 'https://corsproxy.io/?' + encodeURIComponent(url);
+      return '/api/cover?url=' + encodeURIComponent(url);
     }
+
+    var MOCK_BOOKS = [
+      { title:'아몬드', author:'손원평', nationality:'한국', genre:'소설', year:'2017', publisher:'창비',
+        coverImg:'https://image.aladin.co.kr/product/16958/43/cover/8936434121_1.jpg',
+        summary:'세상을 느끼지 못하는 소년 윤재가 할머니와의 사건을 통해 감정을 배워가는 이야기. 아몬드 같은 마음이 조금씩 열리는 과정을 담았다.',
+        detailUrl:'https://www.aladin.co.kr/search/wsearchresult.aspx?SearchTarget=Book&SearchWord=%EC%95%84%EB%AA%AC%EB%93%9C+%EC%86%90%EC%9B%90%ED%8F%89', isChoice:true },
+      { title:'불편한 편의점', author:'김호연', nationality:'한국', genre:'소설', year:'2021', publisher:'나무옆의자',
+        coverImg:'https://image.aladin.co.kr/product/27128/57/cover/8989798213_1.jpg',
+        summary:'서울의 한 편의점을 배경으로 벌어지는 따뜻한 인간 군상 드라마. 각양각색의 손님들이 만들어내는 공감과 치유의 이야기.',
+        detailUrl:'https://www.aladin.co.kr/search/wsearchresult.aspx?SearchTarget=Book&SearchWord=%EB%B6%88%ED%8E%B8%ED%95%9C+%ED%8E%B8%EC%9D%98%EC%A0%90', isChoice:false },
+      { title:'달러구트 꿈 백화점', author:'이미예', nationality:'한국', genre:'판타지', year:'2020', publisher:'팩토리나인',
+        coverImg:'https://image.aladin.co.kr/product/25317/21/cover/1161910345_1.jpg',
+        summary:'꿈을 사고파는 신비한 백화점, 달러구트. 주인공 페니가 꿈을 만드는 사람들과의 교류를 통해 성장하는 판타지 소설.',
+        detailUrl:'https://www.aladin.co.kr/search/wsearchresult.aspx?SearchTarget=Book&SearchWord=%EB%8B%AC%EB%9F%AC%EA%B5%AC%ED%8A%B8+%EA%BF%88+%EB%B0%B1%ED%99%94%EC%A0%90', isChoice:false },
+      { title:'모순', author:'양귀자', nationality:'한국', genre:'소설', year:'1998', publisher:'쓰다',
+        coverImg:'https://image.aladin.co.kr/product/27/12/cover/8998441011_1.jpg',
+        summary:'인생의 모순과 그 안에서 피어나는 인간의 의지를 그린 작품. 양귀자만의 섬세한 문체로 삶의 진실을 파고든다.',
+        detailUrl:'https://www.aladin.co.kr/search/wsearchresult.aspx?SearchTarget=Book&SearchWord=%EB%AA%A8%EC%88%9C+%EC%96%91%EA%B7%80%EC%9E%90', isChoice:false },
+      { title:'오늘 밤, 세계에서 이 사랑이 사라진다 해도', author:'이치조 미사키', nationality:'일본', genre:'로맨스', year:'2022', publisher:'모모',
+        coverImg:'https://image.aladin.co.kr/product/29879/1/cover/1161910345_2.jpg',
+        summary:'기억을 잃어가는 소년과 그를 사랑하는 소녀의 아픈 로맨스. 하루하루 사라져가는 기억 속에서도 피어나는 사랑을 그렸다.',
+        detailUrl:'https://www.aladin.co.kr/search/wsearchresult.aspx?SearchTarget=Book&SearchWord=%EC%98%A4%EB%8A%98+%EB%B0%A4+%EC%84%B8%EA%B3%84%EC%97%90%EC%84%9C+%EC%9D%B4+%EC%82%AC%EB%9E%91%EC%9D%B4+%EC%82%AC%EB%9D%BC%EC%A7%84%EB%8B%A4+%ED%95%B4%EB%8F%84', isChoice:false },
+      { title:'세상에서 가장 예쁜 딸에게', author:'전영신', nationality:'한국', genre:'에세이', year:'2021', publisher:'arte',
+        coverImg:'https://image.aladin.co.kr/product/30147/7/cover/1161910345_3.jpg',
+        summary:'딸에게 전하는 엄마의 따뜻한 편지글. 삶의 지혜와 사랑의 메시지를 담은 에세이가 독자의 마음을 적신다.',
+        detailUrl:'https://www.aladin.co.kr/search/wsearchresult.aspx?SearchTarget=Book&SearchWord=%EC%84%B8%EC%83%81%EC%97%90%EC%84%9C+%EA%B0%80%EC%9E%A5+%EC%98%88%EC%81%9C+%EB%94%B8%EC%97%90%EA%B2%8C', isChoice:false },
+      { title:'나는 나를 돌봅니다', author:'에이미 B. 셔버', nationality:'미국', genre:'자기계발', year:'2022', publisher:'갤리온',
+        coverImg:'https://image.aladin.co.kr/product/31503/2/cover/1161910345_4.jpg',
+        summary:'스스로를 돌보는 용기에 관한 이야기. 타인의 시선이 아닌 나 자신을 먼저 돌보는 삶의 방식을 제안한다.',
+        detailUrl:'https://www.aladin.co.kr/search/wsearchresult.aspx?SearchTarget=Book&SearchWord=%EB%82%98%EB%8A%94+%EB%82%98%EB%A5%BC+%EB%8F%8C%EB%B4%85%EB%8B%88%EB%8B%A4', isChoice:false },
+      { title:'아직 오지 않은 날들을 위하여', author:'류시화', nationality:'한국', genre:'시/에세이', year:'2022', publisher:'페이지2',
+        coverImg:'https://image.aladin.co.kr/product/32201/0/cover/1161910345_5.jpg',
+        summary:'시인이 전하는 내일을 위한 위로의 문장들. 불확실한 미래를 살아가는 이들에게 건네는 따뜻한 응원의 메시지.',
+        detailUrl:'https://www.aladin.co.kr/search/wsearchresult.aspx?SearchTarget=Book&SearchWord=%EC%95%84%EC%A7%81+%EC%98%A4%EC%A7%80+%EC%95%8A%EC%9D%80+%EB%82%A0%EB%93%A4%EC%9D%84+%EC%9C%84%ED%95%98%EC%97%AC', isChoice:false },
+      { title:'잘 살아라, 그게 최고의 복수다', author:'김호연', nationality:'한국', genre:'에세이', year:'2023', publisher:'다산북스',
+        coverImg:'https://image.aladin.co.kr/product/33005/0/cover/1161910345_6.jpg',
+        summary:'인생의 상처와 아픔을 딛고 잘 살아내는 것이 진정한 복수라는 메시지를 전하는 에세이. 공감과 위로를 건넨다.',
+        detailUrl:'https://www.aladin.co.kr/search/wsearchresult.aspx?SearchTarget=Book&SearchWord=%EC%9E%98+%EC%82%B4%EC%95%84%EB%9D%BC+%EA%B7%B8%EA%B2%8C+%EC%B5%9C%EA%B3%A0%EC%9D%98+%EB%B3%B5%EC%88%98%EB%8B%A4', isChoice:false }
+    ];
 
     function shuffleArray(arr) {
       for (var i = arr.length - 1; i > 0; i--) {
@@ -199,6 +259,66 @@
       return arr;
     }
 
+    function renderBooks(data) {
+      loading.style.display = 'none';
+      if (!data.books || data.books.length === 0) {
+        body.insertAdjacentHTML('beforeend', '<div class="bk-error">아직 책이 도착하지 않았습니다</div>');
+        return;
+      }
+
+      body.insertAdjacentHTML('beforeend',
+        '<div class="bk-narrative">' + NARRATIVES[narrativeIdx] + '</div>');
+
+      var books = data.books;
+      var shuffled = shuffleArray([].concat(books));
+
+      var pick = shuffled[0];
+      var pickHtml =
+        '<a href="' + pick.detailUrl + '" target="_blank" rel="noopener" class="bk-pick">' +
+        (pick.coverImg ? '  <div class="bk-pick-cover-wrap"><img class="bk-pick-cover" src="' + proxyCover(pick.coverImg) + '" alt="' + pick.title + '" loading="lazy" onerror="this.style.display=\'none\';this.parentElement.style.display=\'none\'" /></div>' : '') +
+        '  <div class="bk-pick-info">' +
+        '    <div class="bk-pick-label">✦ 오늘의 선택</div>' +
+        '    <div class="bk-pick-title">' + pick.title + '</div>' +
+        '    <div class="bk-pick-author">' + pick.author + '</div>' +
+        '    <div class="bk-pick-meta">' +
+        (pick.nationality ? '      <span>국적</span> ' + pick.nationality + ' · ' : '') +
+        '      <span>장르</span> ' + pick.genre +
+        '      · <span>발행</span> ' + pick.year +
+        '      · <span>출판</span> ' + pick.publisher +
+        '    </div>' +
+        '    <div class="bk-pick-desc">' + pick.summary + '</div>' +
+        '  </div>' +
+        '</a>';
+      body.insertAdjacentHTML('beforeend', pickHtml);
+
+      body.insertAdjacentHTML('beforeend', '<div class="bk-grid" id="bkGrid"></div>');
+      var grid = document.getElementById('bkGrid');
+      var remaining = books.slice(1, 9);
+      remaining.forEach(function(b) {
+        var card = document.createElement('a');
+        card.className = 'bk-card';
+        card.href = b.detailUrl;
+        card.target = '_blank';
+        card.rel = 'noopener';
+        var badge = b.isChoice ? '<div class="bk-badge">Choice</div>' : '';
+        card.innerHTML =
+          badge +
+          (b.coverImg ? '<div class="bk-cover-wrap"><img class="bk-cover" src="' + proxyCover(b.coverImg) + '" alt="' + b.title + '" loading="lazy" onerror="this.style.display=\'none\';this.parentElement.style.display=\'none\'" /></div>' : '') +
+          '<div class="bk-info">' +
+          '<div class="bk-title">' + b.title + '</div>' +
+          '<div class="bk-author">' + b.author + '</div>' +
+          '<div class="bk-meta">' +
+            (b.nationality ? '<span>국적</span> ' + b.nationality + ' · ' : '') +
+            '<span>장르</span> ' + b.genre +
+            ' · <span>발행</span> ' + b.year +
+            ' · <span>출판</span> ' + b.publisher +
+          '</div>' +
+          '<div class="bk-summary">' + b.summary + '</div>' +
+          '</div>';
+        grid.appendChild(card);
+      });
+    }
+
     function fetchBooks() {
       loading.textContent = '별빛 아래 책을 꺼내는 중...';
       loading.style.display = '';
@@ -206,63 +326,14 @@
       var existing = body.querySelectorAll('.bk-narrative, .bk-pick, .bk-grid, .bk-error, .bk-retry');
       existing.forEach(function(el) { if (el.id !== 'bkLoading') el.remove(); });
 
+      if (location.protocol === 'file:') {
+        renderBooks({ books: MOCK_BOOKS });
+        return;
+      }
+
       fetch('/api/books')
-        .then(function(r) {
-          if (!r.ok) throw new Error('서버 응답 오류');
-          return r.json();
-        })
-        .then(function(data) {
-          loading.style.display = 'none';
-          if (!data.books || data.books.length === 0) {
-            body.insertAdjacentHTML('beforeend', '<div class="bk-error">아직 책이 도착하지 않았습니다</div>');
-            return;
-          }
-
-          // Narrative
-          body.insertAdjacentHTML('beforeend',
-            '<div class="bk-narrative">' + NARRATIVES[narrativeIdx] + '</div>');
-
-          var books = data.books;
-          var shuffled = shuffleArray([].concat(books));
-
-          // Today's Pick
-          var pick = shuffled[0];
-          var pickDesc = pick.author ? pick.author + ' · ★' + pick.rating : '★' + pick.rating;
-          var pickHtml =
-            '<a href="' + pick.detailUrl + '" target="_blank" rel="noopener" class="bk-pick">' +
-            '  <div class="bk-pick-label">✦ 오늘의 선택</div>' +
-            (pick.coverImg ? '<img class="bk-pick-cover" src="' + proxyCover(pick.coverImg) + '" alt="' + pick.title + '" loading="lazy" />' : '') +
-            '  <div class="bk-pick-title">' + pick.title + '</div>' +
-            '  <div class="bk-pick-author">' + pickDesc + '</div>' +
-            '  <div class="bk-pick-desc">마법사의 서재가 오늘 당신에게 건네는 한 권입니다<br/>클릭하면 알라딘에서 자세히 볼 수 있습니다</div>' +
-            '</a>';
-          body.insertAdjacentHTML('beforeend', pickHtml);
-
-          // Book grid
-          body.insertAdjacentHTML('beforeend', '<div class="bk-grid" id="bkGrid"></div>');
-          var grid = document.getElementById('bkGrid');
-          var remaining = books.slice(1, 9);
-          remaining.forEach(function(b) {
-            var card = document.createElement('a');
-            card.className = 'bk-card';
-            card.href = b.detailUrl;
-            card.target = '_blank';
-            card.rel = 'noopener';
-            var stars = '';
-            if (b.rating) {
-              var s = Math.round(b.rating / 2);
-              for (var k = 0; k < s; k++) stars += '★';
-            }
-            var badge = b.isChoice ? '<div class="bk-badge">Choice</div>' : '';
-            card.innerHTML =
-              (b.coverImg ? '<img class="bk-cover" src="' + proxyCover(b.coverImg) + '" alt="' + b.title + '" loading="lazy" />' : '') +
-              '<div class="bk-title">' + b.title + '</div>' +
-              (b.author ? '<div class="bk-author">' + b.author + '</div>' : '') +
-              (stars ? '<div class="bk-rating">' + stars + ' ' + b.rating + '</div>' : '') +
-              badge;
-            grid.appendChild(card);
-          });
-        })
+        .then(function(r) { if (!r.ok) throw new Error('서버 응답 오류'); return r.json(); })
+        .then(function(data) { renderBooks(data); })
         .catch(function(err) {
           loading.style.display = 'none';
           body.insertAdjacentHTML('beforeend',
