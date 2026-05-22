@@ -374,7 +374,7 @@
       document.getElementById('rdMuteHint').style.display = 'none';
       document.removeEventListener('click', handleFirstTap);
       document.removeEventListener('touchstart', handleFirstTap);
-      player.loadPlaylist(PLAYLIST_ID);
+      player.playVideo();
     }
 
     function nextTrack() {
@@ -402,6 +402,8 @@
       player = new YT.Player('player', {
         height: 240, width: 360,
         playerVars: {
+          listType: 'playlist',
+          list: PLAYLIST_ID,
           iv_load_policy: 3,
           modestbranding: 1,
           rel: 0,
