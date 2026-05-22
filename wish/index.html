@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#07070d" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>소망의 별자리 — 그리움이 닿는 곳</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    body { justify-content:flex-start; padding:0; }
+    .wish-header {
+      position:fixed; top:0; left:0; right:0; z-index:50;
+      padding:.85rem 2rem;
+      background:rgba(7,7,13,0.92); backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--border);
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .wish-header .back-link { color:var(--text-dim); text-decoration:none; font-family:var(--font-sans); font-size:.8rem; letter-spacing:.1em; transition:color .3s; }
+    @media (hover:hover) { .wish-header .back-link:hover { color:var(--gold); } }
+    .wish-header h1 { font-family:var(--font-serif); font-size:1rem; font-weight:300; color:var(--gold); letter-spacing:.15em; }
+    .wish-header .wish-add-btn {
+      background:none; border:1px solid rgba(201,169,110,0.3);
+      color:var(--gold); font-family:var(--font-sans); font-size:.65rem;
+      padding:.3rem .8rem; cursor:pointer; border-radius:4px;
+      letter-spacing:.1em; transition:all .3s;
+    }
+    .wish-header .wish-add-btn:hover { background:rgba(201,169,110,0.1); }
+
+    #constCanvas {
+      position:fixed; inset:0; z-index:1;
+      width:100%; height:100%;
+      touch-action:manipulation; cursor:pointer;
+    }
+
+    .wish-hint {
+      position:fixed; bottom:5rem; left:50%; transform:translateX(-50%);
+      z-index:10; font-family:var(--font-sans); font-size:.6rem;
+      color:var(--text-muted); letter-spacing:.1em; text-align:center;
+      pointer-events:none; opacity:0; transition:opacity .8s;
+    }
+    .wish-hint.show { opacity:1; }
+
+    /* Wish overlay (click star) */
+    .wish-overlay {
+      position:fixed; inset:0; z-index:100;
+      display:none; align-items:center; justify-content:center;
+      padding:1.5rem;
+      background:rgba(7,7,13,0.85); backdrop-filter:blur(16px);
+    }
+    .wish-overlay.open { display:flex; }
+    .wish-view-card {
+      background:var(--bg-card); border:1px solid var(--border);
+      max-width:400px; width:100%; padding:2.5rem 2rem;
+      text-align:center; position:relative;
+      animation:cardAppear .5s ease forwards;
+    }
+    .wish-view-card .wv-close {
+      position:absolute; top:.8rem; right:1rem;
+      background:none; border:none; color:var(--text-muted);
+      font-size:1.3rem; cursor:pointer; font-family:var(--font-sans);
+      transition:color .3s;
+    }
+    .wish-view-card .wv-close:hover { color:var(--gold); }
+    .wish-view-card .wv-star { font-size:1.8rem; margin-bottom:1rem; }
+    .wish-view-card .wv-wish {
+      font-size:.9rem; line-height:1.9; color:var(--text);
+      font-weight:300; margin-bottom:1rem; word-break:break-word;
+    }
+    .wish-view-card .wv-date {
+      font-family:var(--font-sans); font-size:.55rem;
+      color:var(--text-muted); letter-spacing:.1em;
+    }
+
+    /* Wish form modal */
+    .wish-form-overlay {
+      position:fixed; inset:0; z-index:100;
+      display:none; align-items:center; justify-content:center;
+      padding:1.5rem;
+      background:rgba(7,7,13,0.85); backdrop-filter:blur(16px);
+    }
+    .wish-form-overlay.open { display:flex; }
+    .wish-form-card {
+      background:var(--bg-card); border:1px solid var(--border);
+      max-width:420px; width:100%; padding:2.5rem 2rem;
+      position:relative; animation:cardAppear .5s ease forwards;
+    }
+    .wish-form-card .wf-close {
+      position:absolute; top:.8rem; right:1rem;
+      background:none; border:none; color:var(--text-muted);
+      font-size:1.3rem; cursor:pointer; font-family:var(--font-sans);
+      transition:color .3s;
+    }
+    .wish-form-card .wf-close:hover { color:var(--gold); }
+    .wish-form-card label {
+      display:block; font-family:var(--font-sans); font-size:.65rem;
+      color:var(--text-dim); letter-spacing:.1em; margin-bottom:.8rem;
+    }
+    .wish-form-card textarea {
+      width:100%; min-height:100px; padding:.8rem;
+      background:var(--bg); border:1px solid var(--border);
+      color:var(--text); font-family:var(--font-serif);
+      font-size:.85rem; line-height:1.8; font-weight:300;
+      outline:none; resize:none; transition:border .3s;
+    }
+    .wish-form-card textarea:focus { border-color:rgba(201,169,110,0.3); }
+    .wish-form-card .wf-submit {
+      width:100%; margin-top:1rem; padding:.7rem;
+      border:1px solid rgba(201,169,110,0.3);
+      background:rgba(201,169,110,0.1); color:var(--gold);
+      font-family:var(--font-sans); font-size:.75rem; letter-spacing:.15em;
+      cursor:pointer; transition:all .3s; border-radius:4px;
+    }
+    .wish-form-card .wf-submit:hover { background:rgba(201,169,110,0.2); }
+
+    @media (max-width:480px) {
+      .wish-header { padding:.5rem .8rem; }
+      .wish-header h1 { font-size:.8rem; }
+      .wish-form-card, .wish-view-card { padding:1.5rem 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="wish-header">
+    <a href="../index.html" class="back-link">← 돌아가기</a>
+    <h1>소망의 별자리</h1>
+    <button class="wish-add-btn" id="wishAddBtn">별 빌기</button>
+  </header>
+
+  <canvas id="constCanvas"></canvas>
+  <div class="wish-hint" id="wishHint">별을 터치하면 소원을 볼 수 있습니다</div>
+
+  <nav class="mode-nav">
+    <a href="../oracle/index.html" class="mode-btn">오라클</a>
+    <a href="../tarot/index.html" class="mode-btn">타로</a>
+    <a href="../comfort/index.html" class="mode-btn">처방전</a>
+    <a href="../postcard/index.html" class="mode-btn">엽서</a>
+    <a href="../capsule/index.html" class="mode-btn">캡슐</a>
+    <a href="../wish/index.html" class="mode-btn active">별자리</a>
+    <a href="../book/index.html" class="mode-btn">서재</a>
+  </nav>
+
+  <!-- View wish overlay -->
+  <div class="wish-overlay" id="wishOverlay">
+    <div class="wish-view-card">
+      <button class="wv-close" id="wvClose">✕</button>
+      <div class="wv-star">✦</div>
+      <div class="wv-wish" id="wvWish"></div>
+      <div class="wv-date" id="wvDate"></div>
+    </div>
+  </div>
+
+  <!-- Wish form modal -->
+  <div class="wish-form-overlay" id="wishFormOverlay">
+    <div class="wish-form-card">
+      <button class="wf-close" id="wfClose">✕</button>
+      <label>당신의 소원을 적어보세요<br/>별자리에 새로운 별이 생깁니다</label>
+      <textarea id="wfText" placeholder="..."></textarea>
+      <button class="wf-submit" id="wfSubmit">별을 빌다</button>
+    </div>
+  </div>
+
+  <script>
+    var STORAGE_KEY = 'wishes';
+
+    function getWishes() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch(e) { return []; }
+    }
+
+    function saveWishes(arr) { localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)); }
+
+    // Hash string to deterministic number
+    function hashStr(s) {
+      var h = 0;
+      for (var i = 0; i < s.length; i++) { h = ((h << 5) - h) + s.charCodeAt(i); h |= 0; }
+      return Math.abs(h);
+    }
+
+    // Canvas setup
+    var canvas = document.getElementById('constCanvas');
+    var ctx = canvas.getContext('2d');
+    var W, H;
+    var wishes = [];
+    var starData = [];
+    var hoverIdx = -1;
+    var animFrame = null;
+    var pulse = 0;
+
+    function resize() {
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width = W * devicePixelRatio;
+      canvas.height = H * devicePixelRatio;
+      canvas.style.width = W + 'px';
+      canvas.style.height = H + 'px';
+      ctx.scale(devicePixelRatio, devicePixelRatio);
+    }
+
+    function computeStars() {
+      starData = [];
+      wishes = getWishes();
+      wishes.forEach(function(w, i) {
+        var h = hashStr(w.text + i);
+        // Distribute stars in a ring/constellation pattern
+        var angle = (i / 7) * Math.PI * 2 + (h % 100) * 0.001;
+        var radius = 0.15 + (h % 50) * 0.008;
+        var cx = W / 2 + Math.cos(angle) * Math.min(W, H) * radius * 0.45;
+        var cy = H * (0.25 + 0.5 * ((h % 37) / 37)) + Math.sin(angle) * Math.min(W, H) * radius * 0.15;
+        var size = 2 + (h % 4);
+        starData.push({ x: cx, y: cy, r: size, wish: w, idx: i, phase: (h % 100) * 0.01 });
+      });
+    }
+
+    function drawStars() {
+      ctx.clearRect(0, 0, W, H);
+      if (starData.length === 0) {
+        ctx.fillStyle = 'rgba(201,169,110,0.08)';
+        ctx.font = '14px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('아직 별이 없습니다. 별을 빌어보세요.', W/2, H/2);
+        return;
+      }
+
+      // Draw constellation lines (connect nearest neighbors)
+      for (var i = 0; i < starData.length; i++) {
+        var nearest = [];
+        for (var j = 0; j < starData.length; j++) {
+          if (i === j) continue;
+          var dx = starData[j].x - starData[i].x;
+          var dy = starData[j].y - starData[i].y;
+          var dist = Math.sqrt(dx*dx + dy*dy);
+          nearest.push({ idx: j, dist: dist });
+        }
+        nearest.sort(function(a,b) { return a.dist - b.dist; });
+        for (var k = 0; k < Math.min(2, nearest.length); k++) {
+          if (nearest[k].dist < Math.min(W, H) * 0.35) {
+            var ni = nearest[k].idx;
+            if (ni > i) continue;
+            ctx.beginPath();
+            ctx.moveTo(starData[i].x, starData[i].y);
+            ctx.lineTo(starData[ni].x, starData[ni].y);
+            ctx.strokeStyle = 'rgba(201,169,110,' + (0.06 + 0.04 * Math.sin(pulse + starData[i].phase)) + ')';
+            ctx.lineWidth = 0.6;
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Draw stars
+      starData.forEach(function(s, i) {
+        var glow = 0.15 + 0.1 * Math.sin(pulse + s.phase);
+        var isHover = (i === hoverIdx);
+
+        // Glow
+        var grad = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 8);
+        grad.addColorStop(0, 'rgba(201,169,110,' + (isHover ? 0.3 : glow) + ')');
+        grad.addColorStop(1, 'rgba(201,169,110,0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r * 8, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Star core
+        ctx.fillStyle = isHover ? '#e8d8b0' : '#c9a96e';
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, isHover ? s.r * 1.8 : s.r, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (isHover) {
+          ctx.strokeStyle = 'rgba(201,169,110,0.2)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.r * 4, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      });
+    }
+
+    function animate() {
+      pulse += 0.02;
+      drawStars();
+      animFrame = requestAnimationFrame(animate);
+    }
+
+    // Init
+    function initCanvas() {
+      resize();
+      computeStars();
+      if (animFrame) cancelAnimationFrame(animFrame);
+      animate();
+    }
+
+    window.addEventListener('resize', function() {
+      resize();
+      computeStars();
+    });
+
+    // Find nearest star to click point
+    function findStar(x, y) {
+      var minDist = 30;
+      var found = -1;
+      starData.forEach(function(s, i) {
+        var dx = s.x - x;
+        var dy = s.y - y;
+        var d = Math.sqrt(dx*dx + dy*dy);
+        if (d < minDist) { minDist = d; found = i; }
+      });
+      return found;
+    }
+
+    canvas.addEventListener('click', function(e) {
+      var rect = canvas.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+      var idx = findStar(x, y);
+      if (idx >= 0) {
+        var s = starData[idx];
+        document.getElementById('wvWish').textContent = s.wish.text;
+        var d = new Date(s.wish.date);
+        document.getElementById('wvDate').textContent =
+          d.getFullYear() + '년 ' + (d.getMonth()+1) + '월 ' + d.getDate() + '일에 빈 소원';
+        document.getElementById('wishOverlay').classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+    });
+
+    canvas.addEventListener('mousemove', function(e) {
+      var rect = canvas.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+      hoverIdx = findStar(x, y);
+      canvas.style.cursor = hoverIdx >= 0 ? 'pointer' : 'default';
+    });
+
+    canvas.addEventListener('mouseleave', function() { hoverIdx = -1; });
+
+    // View overlay close
+    document.getElementById('wvClose').addEventListener('click', function() {
+      document.getElementById('wishOverlay').classList.remove('open');
+      document.body.style.overflow = '';
+    });
+    document.getElementById('wishOverlay').addEventListener('click', function(e) {
+      if (e.target === this) {
+        this.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    });
+
+    // Show hint briefly
+    setTimeout(function() {
+      document.getElementById('wishHint').classList.add('show');
+      setTimeout(function() {
+        document.getElementById('wishHint').classList.remove('show');
+      }, 4000);
+    }, 1000);
+
+    // Form overlay
+    var formOv = document.getElementById('wishFormOverlay');
+    document.getElementById('wishAddBtn').addEventListener('click', function() {
+      formOv.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      document.getElementById('wfText').focus();
+    });
+    document.getElementById('wfClose').addEventListener('click', function() {
+      formOv.classList.remove('open');
+      document.body.style.overflow = '';
+    });
+    formOv.addEventListener('click', function(e) {
+      if (e.target === this) {
+        this.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    });
+
+    document.getElementById('wfSubmit').addEventListener('click', function() {
+      var text = document.getElementById('wfText').value.trim();
+      if (!text) { alert('소원을 적어주세요.'); return; }
+      var wList = getWishes();
+      wList.push({ text: text, date: Date.now() });
+      saveWishes(wList);
+      document.getElementById('wfText').value = '';
+      formOv.classList.remove('open');
+      document.body.style.overflow = '';
+      computeStars();
+    });
+
+    // Stars background
+    (function(){
+      var c=document.getElementById('stars');
+      if (c) {
+        for(var i=0;i<60;i++){
+          var s=document.createElement('div'); s.className='star';
+          s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*100+'%';
+          s.style.setProperty('--d',(Math.random()*4+3)+'s');
+          s.style.animationDelay=Math.random()*5+'s'; c.appendChild(s);
+        }
+      }
+    })();
+
+    initCanvas();
+  </script>
+</body>
+</html>

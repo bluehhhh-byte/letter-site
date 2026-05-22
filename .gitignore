@@ -10,3 +10,6 @@ Thumbs.db
 config.js
 .env
 .vercel
+
+# Dependencies
+node_modules/

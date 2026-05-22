@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#07070d" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>마음 처방전 — 그리움이 닿는 곳</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    body { justify-content: flex-start; padding-top: 5rem; }
+    .comfort-header {
+      position: fixed; top:0; left:0; right:0; z-index:50;
+      padding:.85rem 2rem;
+      background:rgba(7,7,13,0.92); backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--border);
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .comfort-header .back-link { color:var(--text-dim); text-decoration:none; font-family:var(--font-sans); font-size:.8rem; letter-spacing:.1em; transition:color .3s; }
+    @media (hover:hover) { .comfort-header .back-link:hover { color:var(--gold); } }
+    .comfort-header h1 { font-family:var(--font-serif); font-size:1rem; font-weight:300; color:var(--gold); letter-spacing:.15em; }
+    .comfort-body { position:relative; z-index:1; width:100%; max-width:560px; padding:1rem 1.5rem 8rem; display:flex; flex-direction:column; align-items:center; }
+    .comfort-desc { font-family:var(--font-sans); font-size:.7rem; color:var(--text-dim); letter-spacing:.1em; text-align:center; margin-bottom:2rem; line-height:1.8; }
+    .prescription-grid { display:grid; grid-template-columns:1fr 1fr; gap:.6rem; width:100%; }
+    .rx-btn {
+      display:flex; flex-direction:column; align-items:center; gap:.4rem;
+      padding:1.2rem .8rem;
+      border:1px solid var(--border); background:var(--bg-card);
+      color:var(--text); border-radius:4px; cursor:pointer;
+      font-family:var(--font-serif); font-size:.8rem; font-weight:300;
+      transition:all .3s; touch-action:manipulation;
+      text-align:center; line-height:1.4;
+    }
+    @media (hover:hover) {
+      .rx-btn:hover { border-color:var(--gold-dim); background:rgba(201,169,110,0.05); }
+    }
+    .rx-btn:active { transform:scale(0.96); }
+    .rx-btn .rx-icon { font-size:1.5rem; margin-bottom:.2rem; }
+    .rx-btn .rx-sub { font-size:.6rem; color:var(--text-muted); font-family:var(--font-sans); letter-spacing:.05em; }
+
+    /* Overlay */
+    .rx-overlay {
+      position:fixed; inset:0; z-index:100;
+      display:none; align-items:center; justify-content:center;
+      padding:1.5rem;
+      background:rgba(7,7,13,0.85); backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+    }
+    .rx-overlay.open { display:flex; }
+    .rx-card {
+      background:var(--bg-card); border:1px solid var(--border);
+      max-width:480px; width:100%; padding:3rem 2rem;
+      position:relative; text-align:center;
+      transform-origin:center;
+    }
+    .rx-card .rx-close {
+      position:absolute; top:.8rem; right:1rem;
+      background:none; border:none; color:var(--text-muted);
+      font-size:1.3rem; cursor:pointer; font-family:var(--font-sans); line-height:1;
+      transition:color .3s;
+    }
+    .rx-card .rx-close:hover { color:var(--gold); }
+
+    .rx-card .rx-tag {
+      font-family:var(--font-sans); font-size:.6rem;
+      letter-spacing:.2em; color:var(--gold-dim); margin-bottom:1.5rem;
+    }
+
+    /* Animated text */
+    .rx-card .rx-title {
+      font-size:1.1rem; font-weight:400; color:var(--gold);
+      margin-bottom:1.5rem; opacity:0;
+      animation:rxFadeIn .8s ease .3s forwards;
+    }
+    .rx-card .rx-body {
+      font-size:.9rem; line-height:2.2; color:var(--text);
+      font-weight:300; text-align:center;
+    }
+    .rx-card .rx-body .rx-line {
+      display:block; opacity:0;
+      animation:rxLineIn .6s ease forwards;
+    }
+    @keyframes rxFadeIn { to { opacity:1; } }
+    @keyframes rxLineIn {
+      0% { opacity:0; transform:translateY(8px); }
+      100% { opacity:1; transform:translateY(0); }
+    }
+    .rx-card .rx-footer {
+      margin-top:2rem; font-family:var(--font-sans); font-size:.65rem;
+      color:var(--text-muted); letter-spacing:.1em; opacity:0;
+      animation:rxFadeIn .8s ease 2s forwards;
+    }
+    @media (max-width:480px) {
+      body { padding-top:4rem; }
+      .comfort-body { padding:.5rem 1rem 8rem; }
+      .prescription-grid { gap:.4rem; }
+      .rx-btn { padding:.8rem .6rem; font-size:.75rem; }
+      .rx-btn .rx-icon { font-size:1.2rem; }
+      .rx-card { padding:2rem 1.2rem; margin:.5rem; }
+      .rx-card .rx-title { font-size:1rem; }
+      .rx-card .rx-body { font-size:.85rem; line-height:2; }
+      .comfort-desc { font-size:.65rem; }
+    }
+    @media (max-width:374px) {
+      .prescription-grid { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="comfort-header">
+    <a href="../index.html" class="back-link">← 돌아가기</a>
+    <h1>마음 처방전</h1>
+    <span></span>
+  </header>
+
+  <div class="stars" id="stars"></div>
+
+  <nav class="mode-nav">
+    <a href="../oracle/index.html" class="mode-btn">오라클</a>
+    <a href="../tarot/index.html" class="mode-btn">타로</a>
+    <a href="../comfort/index.html" class="mode-btn active">처방전</a>
+    <a href="../postcard/index.html" class="mode-btn">엽서</a>
+    <a href="../capsule/index.html" class="mode-btn">캡슐</a>
+    <a href="../wish/index.html" class="mode-btn">별자리</a>
+    <a href="../book/index.html" class="mode-btn">서재</a>
+  </nav>
+
+  <div class="comfort-body">
+    <p class="comfort-desc">
+      지금 네 마음에 가장 가까운 감정을 골라보아요<br/>
+      그리움이 닿는 곳이 건네는 말이 있습니다
+    </p>
+
+    <div class="prescription-grid" id="rxGrid"></div>
+  </div>
+
+  <div class="rx-overlay" id="rxOverlay">
+    <div class="rx-card" id="rxCard">
+      <button class="rx-close" id="rxClose">✕</button>
+      <div class="rx-tag" id="rxTag"></div>
+      <div class="rx-title" id="rxTitle"></div>
+      <div class="rx-body" id="rxBody"></div>
+      <div class="rx-footer">그리움이 닿는 곳 · 당신의 곁에</div>
+    </div>
+  </div>
+
+  <div class="footer">그리움이 닿는 곳</div>
+
+  <script>
+    const prescriptions = [
+      {
+        icon: '🌙',
+        label: '잠이 오지 않는 밤',
+        sub: '고요한 위로',
+        title: '잠들지 못하는 당신에게',
+        body: [
+          '조용히 눈을 감아요.',
+          '오늘 하루, 잘 버텨냈습니다.',
+          '지금의 불면증은 당신이 예민하게,\n깊이 살아왔다는 증거입니다.',
+          '억지로 잠을 청하지 않아도 괜찮아요.',
+          '그냥 누워서, 천천히 숨을 쉬어요.',
+          '별들은 당신이 깨어 있어도\n함께이고, 당신이 잠들 때까지\n지켜볼 것입니다.'
+        ]
+      },
+      {
+        icon: '🍃',
+        label: '불안할 때',
+        sub: '잔잔한 안정',
+        title: '지금은 그저 숨쉬기만 해도 충분합니다',
+        body: [
+          '불안은 당신이 무언가를\n소중히 여기고 있다는 증거입니다.',
+          '지금 느끼는 이 떨림도,\n결국은 당신을 지나갈 것입니다.',
+          '아주 작은 숨부터 시작해요.',
+          '들이마시고, 내쉬고.',
+          '당신은 이 순간을,\n그리고 앞으로의 순간들도\n견딜 수 있는 사람입니다.'
+        ]
+      },
+      {
+        icon: '🕯',
+        label: '문득 외로울 때',
+        sub: '따스한 온기',
+        title: '당신의 외로움은\n결코 혼자가 아닙니다',
+        body: [
+          '누군가 생각나는 밤,\n그 자체가 이미 연결되어 있다는 뜻입니다.',
+          '멀리 있어도,\n당신을 생각하는 마음은\n공간을 건너 도착합니다.',
+          '당신의 그리움이 닿는 곳에는\n항상 당신을 기다리는 온기가 있습니다.',
+          '외로움은 당신이 사랑을\n할 줄 아는 사람이라는\n가장 확실한 증거입니다.'
+        ]
+      },
+      {
+        icon: '🌸',
+        label: '자존감이 떨어질 때',
+        sub: '가만한 확신',
+        title: '당신은 이미 충분한 사람입니다',
+        body: [
+          '오늘의 당신은,\n지난날의 모든 당신이\n이루어낸 결과입니다.',
+          '작은 실수나 부족함은\n당신의 가치를 조금도\n줄이지 않습니다.',
+          '당신이 누군가에게 건넨\n작은 친절 하나가\n오늘도 세상을 움직였습니다.',
+          '당신은 그냥 존재하는 것만으로\n이미 충분히 값진 사람입니다.'
+        ]
+      },
+      {
+        icon: '🌄',
+        label: '모든 것이 지칠 때',
+        sub: '쉼의 허락',
+        title: '잠시 멈추어도 됩니다',
+        body: [
+          '지친다는 것은\n당신이 꽤 먼 길을\n왔다는 뜻입니다.',
+          '쉬는 것은 결코\n뒤처지는 것이 아닙니다.',
+          '잠시 멈추어,\n지나온 길을 돌아보아요.',
+          '당신은 해야 할 일을\n충분히 해왔습니다.',
+          '이제는,\n그냥 숨 쉬고,\n존재하는 것만으로도\n괜찮은 시간입니다.'
+        ]
+      }
+    ];
+
+    const grid = document.getElementById('rxGrid');
+    const overlay = document.getElementById('rxOverlay');
+    const card = document.getElementById('rxCard');
+    const tag = document.getElementById('rxTag');
+    const title = document.getElementById('rxTitle');
+    const body = document.getElementById('rxBody');
+    const close = document.getElementById('rxClose');
+
+    prescriptions.forEach((rx, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'rx-btn';
+      btn.style.animationDelay = (i * 0.08) + 's';
+      btn.innerHTML = `
+        <span class="rx-icon">${rx.icon}</span>
+        ${rx.label}
+        <span class="rx-sub">${rx.sub}</span>
+      `;
+      btn.addEventListener('click', () => openRx(rx));
+      grid.appendChild(btn);
+    });
+
+    function openRx(rx) {
+      tag.textContent = rx.sub.toUpperCase();
+      title.textContent = '';
+      body.innerHTML = '';
+
+      // Typewriter-like line-by-line reveal
+      const titleEl = document.createElement('span');
+      titleEl.textContent = rx.title;
+      titleEl.style.display = 'block';
+      titleEl.style.opacity = '0';
+      titleEl.style.animation = 'rxFadeIn .8s ease .3s forwards';
+      title.appendChild(titleEl);
+
+      rx.body.forEach((line, i) => {
+        const el = document.createElement('span');
+        el.className = 'rx-line';
+        el.textContent = line;
+        el.style.animationDelay = (0.6 + i * 0.2) + 's';
+        body.appendChild(el);
+        if (i < rx.body.length - 1) {
+          const br = document.createElement('br');
+          br.style.animationDelay = (0.6 + i * 0.2) + 's';
+          body.appendChild(br);
+        }
+      });
+
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      card.style.animation = 'none';
+      card.offsetHeight;
+      card.style.animation = 'cardAppear 0.6s ease forwards';
+    }
+
+    function closeRx() {
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+      body.innerHTML = '';
+      title.innerHTML = '';
+    }
+
+    close.addEventListener('click', closeRx);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeRx(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeRx(); });
+
+    // Stars
+    (function(){
+      const c=document.getElementById('stars');
+      for(let i=0;i<40;i++){
+        const s=document.createElement('div'); s.className='star';
+        s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*100+'%';
+        s.style.setProperty('--d',(Math.random()*4+3)+'s');
+        s.style.animationDelay=Math.random()*5+'s'; c.appendChild(s);
+      }
+    })();
+  </script>
+</body>
+</html>

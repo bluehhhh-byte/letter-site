@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#07070d" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>마법사의 서재 — 그리움이 닿는 곳</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    body { justify-content: flex-start; padding-top:5rem; }
+    .bk-header {
+      position:fixed; top:0; left:0; right:0; z-index:50;
+      padding:.85rem 2rem;
+      background:rgba(7,7,13,0.92); backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--border);
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .bk-header .back-link { color:var(--text-dim); text-decoration:none; font-family:var(--font-sans); font-size:.8rem; letter-spacing:.1em; transition:color .3s; }
+    @media (hover:hover) { .bk-header .back-link:hover { color:var(--gold); } }
+    .bk-header h1 { font-family:var(--font-serif); font-size:1rem; font-weight:300; color:var(--gold); letter-spacing:.15em; }
+    .bk-body { position:relative; z-index:1; width:100%; max-width:680px; padding:1rem 1.5rem 8rem; display:flex; flex-direction:column; align-items:center; gap:1.2rem; }
+
+    .bk-narrative {
+      font-family:var(--font-serif); font-size:.8rem; line-height:2;
+      color:var(--text-dim); text-align:center; font-weight:300;
+      padding:1.5rem 1rem; border:1px solid var(--border);
+      background:var(--bg-card); max-width:480px;
+    }
+    .bk-narrative em { font-style:normal; color:var(--gold); }
+
+    .bk-loading {
+      font-family:var(--font-sans); font-size:.7rem;
+      color:var(--text-muted); letter-spacing:.15em;
+      padding:2rem; text-align:center;
+    }
+    .bk-error {
+      font-family:var(--font-sans); font-size:.7rem;
+      color:#c97e6e; text-align:center; padding:1rem;
+      border:1px solid rgba(201,126,110,0.2);
+    }
+
+    .bk-grid {
+      display:grid; grid-template-columns:1fr 1fr; gap:.8rem;
+      width:100%;
+    }
+
+    .bk-card {
+      display:flex; flex-direction:column; align-items:center;
+      border:1px solid var(--border); background:var(--bg-card);
+      padding:1.2rem 1rem; cursor:pointer;
+      transition:all .3s; touch-action:manipulation;
+      text-decoration:none; color:var(--text);
+      animation:bkFadeIn .6s ease forwards; opacity:0;
+    }
+    .bk-card:nth-child(1) { animation-delay:.05s; }
+    .bk-card:nth-child(2) { animation-delay:.1s; }
+    .bk-card:nth-child(3) { animation-delay:.15s; }
+    .bk-card:nth-child(4) { animation-delay:.2s; }
+    .bk-card:nth-child(5) { animation-delay:.25s; }
+    .bk-card:nth-child(6) { animation-delay:.3s; }
+    .bk-card:nth-child(7) { animation-delay:.35s; }
+    .bk-card:nth-child(8) { animation-delay:.4s; }
+    @keyframes bkFadeIn { to { opacity:1; transform:translateY(0); } from { opacity:0; transform:translateY(12px); } }
+    @media (hover:hover) {
+      .bk-card:hover { border-color:var(--gold-dim); transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,0.2); }
+    }
+    .bk-card:active { transform:scale(0.97); }
+
+    .bk-card .bk-cover {
+      width:100%; aspect-ratio:3/4; object-fit:cover;
+      border:1px solid rgba(201,169,110,0.08);
+      margin-bottom:.6rem; background:var(--bg);
+    }
+    .bk-card .bk-title {
+      font-family:var(--font-serif); font-size:.75rem;
+      font-weight:400; line-height:1.4; text-align:center;
+      margin-bottom:.2rem;
+    }
+    .bk-card .bk-author {
+      font-family:var(--font-sans); font-size:.6rem;
+      color:var(--text-muted); letter-spacing:.05em;
+    }
+    .bk-card .bk-rating {
+      font-family:var(--font-sans); font-size:.55rem;
+      color:var(--gold-dim); margin-top:.3rem;
+    }
+    .bk-card .bk-badge {
+      font-family:var(--font-sans); font-size:.45rem;
+      letter-spacing:.1em; color:var(--gold); margin-top:.3rem;
+      border:1px solid rgba(201,169,110,0.2); padding:.1rem .4rem;
+    }
+
+    /* Today's Pick highlight card */
+    .bk-pick {
+      width:100%; max-width:480px;
+      display:flex; flex-direction:column; align-items:center;
+      border:1px solid rgba(201,169,110,0.25);
+      background:rgba(201,169,110,0.03); padding:1.5rem 1.2rem;
+      text-align:center; cursor:pointer; text-decoration:none;
+      color:var(--text); transition:all .3s;
+      animation:bkFadeIn .6s ease forwards; opacity:0;
+    }
+    .bk-pick .bk-pick-label {
+      font-family:var(--font-sans); font-size:.55rem;
+      letter-spacing:.2em; color:var(--gold); margin-bottom:.8rem;
+    }
+    .bk-pick .bk-pick-cover {
+      width:120px; aspect-ratio:3/4; object-fit:cover;
+      border:1px solid rgba(201,169,110,0.15);
+      margin-bottom:.6rem;
+    }
+    .bk-pick .bk-pick-title {
+      font-family:var(--font-serif); font-size:.9rem;
+      font-weight:400; color:var(--gold);
+    }
+    .bk-pick .bk-pick-author {
+      font-family:var(--font-sans); font-size:.65rem;
+      color:var(--text-dim); margin-top:.2rem;
+    }
+    .bk-pick .bk-pick-desc {
+      font-family:var(--font-serif); font-size:.7rem;
+      color:var(--text-dim); line-height:1.8;
+      margin-top:.6rem; font-weight:300;
+    }
+
+    .bk-retry {
+      margin-top:.5rem; padding:.5rem 1.2rem;
+      border:1px solid var(--border); background:var(--bg-card);
+      color:var(--text-dim); font-family:var(--font-sans);
+      font-size:.65rem; cursor:pointer; border-radius:4px;
+      transition:all .3s; touch-action:manipulation;
+    }
+    .bk-retry:hover { border-color:var(--gold-dim); color:var(--gold); }
+
+    @media (max-width:480px) {
+      body { padding-top:4rem; }
+      .bk-body { padding:.5rem 1rem 8rem; gap:1rem; }
+      .bk-grid { gap:.5rem; }
+      .bk-card { padding:.8rem .6rem; }
+      .bk-card .bk-title { font-size:.7rem; }
+      .bk-narrative { font-size:.75rem; padding:1rem .8rem; }
+      .bk-pick { padding:1rem .8rem; }
+      .bk-pick .bk-pick-cover { width:100px; }
+    }
+    @media (max-width:374px) {
+      .bk-grid { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="bk-header">
+    <a href="../index.html" class="back-link">← 돌아가기</a>
+    <h1>마법사의 서재</h1>
+    <span></span>
+  </header>
+
+  <div class="stars" id="stars"></div>
+
+  <nav class="mode-nav">
+    <a href="../oracle/index.html" class="mode-btn">오라클</a>
+    <a href="../tarot/index.html" class="mode-btn">타로</a>
+    <a href="../comfort/index.html" class="mode-btn">처방전</a>
+    <a href="../postcard/index.html" class="mode-btn">엽서</a>
+    <a href="../capsule/index.html" class="mode-btn">캡슐</a>
+    <a href="../wish/index.html" class="mode-btn">별자리</a>
+    <a href="../book/index.html" class="mode-btn active">서재</a>
+  </nav>
+
+  <div class="bk-body" id="bkBody">
+    <p class="bk-loading" id="bkLoading">별빛 아래 책을 꺼내는 중...</p>
+  </div>
+
+  <div class="footer">그리움이 닿는 곳</div>
+
+  <script>
+    var NARRATIVES = [
+      '당신이 이 책을 읽으며 따뜻한 밤을 보내길 바라는 마음으로<br/>마법사의 서재에서 <em>신간</em>을 꺼내왔습니다',
+      '지금 내 곁엔 없지만,<br/>이 페이지 너머로 전하는 <em>문장</em>이 당신에게 닿기를',
+      '마법사가 엮은 오늘의 <em>추천</em>입니다<br/>당신의 책꽂이에 새 이야기가 찾아갑니다'
+    ];
+
+    var body = document.getElementById('bkBody');
+    var loading = document.getElementById('bkLoading');
+    var narrativeIdx = Math.floor(Math.random() * NARRATIVES.length);
+
+    function shuffleArray(arr) {
+      for (var i = arr.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+      }
+      return arr;
+    }
+
+    function fetchBooks() {
+      loading.textContent = '별빛 아래 책을 꺼내는 중...';
+      loading.style.display = '';
+
+      var existing = body.querySelectorAll('.bk-narrative, .bk-pick, .bk-grid, .bk-error, .bk-retry');
+      existing.forEach(function(el) { if (el.id !== 'bkLoading') el.remove(); });
+
+      fetch('/api/books')
+        .then(function(r) {
+          if (!r.ok) throw new Error('서버 응답 오류');
+          return r.json();
+        })
+        .then(function(data) {
+          loading.style.display = 'none';
+          if (!data.books || data.books.length === 0) {
+            body.insertAdjacentHTML('beforeend', '<div class="bk-error">아직 책이 도착하지 않았습니다</div>');
+            return;
+          }
+
+          // Narrative
+          body.insertAdjacentHTML('beforeend',
+            '<div class="bk-narrative">' + NARRATIVES[narrativeIdx] + '</div>');
+
+          var books = data.books;
+          var shuffled = shuffleArray([].concat(books));
+
+          // Today's Pick
+          var pick = shuffled[0];
+          var pickDesc = pick.author ? pick.author + ' · ★' + pick.rating : '★' + pick.rating;
+          var pickHtml =
+            '<a href="' + pick.detailUrl + '" target="_blank" rel="noopener" class="bk-pick">' +
+            '  <div class="bk-pick-label">✦ 오늘의 선택</div>' +
+            (pick.coverImg ? '<img class="bk-pick-cover" src="' + pick.coverImg + '" alt="' + pick.title + '" loading="lazy" />' : '') +
+            '  <div class="bk-pick-title">' + pick.title + '</div>' +
+            '  <div class="bk-pick-author">' + pickDesc + '</div>' +
+            '  <div class="bk-pick-desc">마법사의 서재가 오늘 당신에게 건네는 한 권입니다<br/>클릭하면 알라딘에서 자세히 볼 수 있습니다</div>' +
+            '</a>';
+          body.insertAdjacentHTML('beforeend', pickHtml);
+
+          // Book grid
+          body.insertAdjacentHTML('beforeend', '<div class="bk-grid" id="bkGrid"></div>');
+          var grid = document.getElementById('bkGrid');
+          var remaining = books.slice(1, 9);
+          remaining.forEach(function(b) {
+            var card = document.createElement('a');
+            card.className = 'bk-card';
+            card.href = b.detailUrl;
+            card.target = '_blank';
+            card.rel = 'noopener';
+            var stars = '';
+            if (b.rating) {
+              var s = Math.round(b.rating / 2);
+              for (var k = 0; k < s; k++) stars += '★';
+            }
+            var badge = b.isChoice ? '<div class="bk-badge">Choice</div>' : '';
+            card.innerHTML =
+              (b.coverImg ? '<img class="bk-cover" src="' + b.coverImg + '" alt="' + b.title + '" loading="lazy" />' : '') +
+              '<div class="bk-title">' + b.title + '</div>' +
+              (b.author ? '<div class="bk-author">' + b.author + '</div>' : '') +
+              (stars ? '<div class="bk-rating">' + stars + ' ' + b.rating + '</div>' : '') +
+              badge;
+            grid.appendChild(card);
+          });
+        })
+        .catch(function(err) {
+          loading.style.display = 'none';
+          body.insertAdjacentHTML('beforeend',
+            '<div class="bk-error">책을 가져오지 못했습니다<br/>잠시 후 다시 시도해 주세요</div>' +
+            '<button class="bk-retry" onclick="fetchBooks()">다시 시도</button>');
+        });
+    }
+
+    // Stars
+    (function(){
+      var c=document.getElementById('stars');
+      for(var i=0;i<50;i++){
+        var s=document.createElement('div'); s.className='star';
+        s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*100+'%';
+        s.style.setProperty('--d',(Math.random()*4+3)+'s');
+        s.style.animationDelay=Math.random()*5+'s'; c.appendChild(s);
+      }
+    })();
+
+    fetchBooks();
+  </script>
+</body>
+</html>

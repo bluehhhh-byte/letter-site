@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#07070d" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>시간 캡슐 — 그리움이 닿는 곳</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    body { justify-content: flex-start; padding-top:5rem; }
+    .cap-header {
+      position:fixed; top:0; left:0; right:0; z-index:50;
+      padding:.85rem 2rem;
+      background:rgba(7,7,13,0.92); backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--border);
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .cap-header .back-link { color:var(--text-dim); text-decoration:none; font-family:var(--font-sans); font-size:.8rem; letter-spacing:.1em; transition:color .3s; }
+    @media (hover:hover) { .cap-header .back-link:hover { color:var(--gold); } }
+    .cap-header h1 { font-family:var(--font-serif); font-size:1rem; font-weight:300; color:var(--gold); letter-spacing:.15em; }
+    .cap-body { position:relative; z-index:1; width:100%; max-width:560px; padding:1rem 1.5rem 8rem; display:flex; flex-direction:column; align-items:center; gap:1.2rem; }
+    .cap-desc { font-family:var(--font-sans); font-size:.7rem; color:var(--text-dim); letter-spacing:.1em; text-align:center; line-height:1.8; }
+
+    /* Envelope */
+    .envelope-wrap {
+      position:relative; width:100%; max-width:320px; cursor:pointer;
+      touch-action:manipulation;
+    }
+    .envelope-wrap.can-open .envelope-body {
+      animation:envPulse 2s ease-in-out infinite;
+      border-color:var(--gold);
+    }
+    .envelope-wrap.can-open .envelope-seal {
+      background:var(--gold); box-shadow:0 0 20px rgba(201,169,110,0.4);
+    }
+    @keyframes envPulse {
+      0%,100% { box-shadow:0 0 15px rgba(201,169,110,0.1); }
+      50% { box-shadow:0 0 30px rgba(201,169,110,0.25); }
+    }
+    .envelope-body {
+      background:var(--bg-card); border:1px solid var(--border);
+      padding:3rem 2rem 2rem; text-align:center;
+      transition:all .4s; position:relative;
+    }
+    .envelope-flap {
+      position:absolute; top:0; left:0; right:0; height:1.2rem;
+      background:var(--bg-card); border-bottom:1px solid var(--border);
+      clip-path:polygon(0 0, 50% 100%, 100% 0);
+    }
+    .envelope-seal {
+      position:absolute; top:-.6rem; left:50%; transform:translateX(-50%);
+      width:1.8rem; height:1.8rem; border-radius:50%;
+      background:var(--gold-dim); border:1px solid rgba(201,169,110,0.3);
+      display:flex; align-items:center; justify-content:center;
+      font-size:.7rem; transition:all .4s;
+    }
+    .envelope-seal::after { content:'✦'; color:var(--bg); font-size:.5rem; }
+    .envelope-status {
+      font-family:var(--font-sans); font-size:.6rem;
+      letter-spacing:.2em; color:var(--gold-dim); margin-bottom:.5rem;
+    }
+    .envelope-icon { font-size:2.5rem; margin-bottom:1rem; opacity:0.6; }
+    .envelope-date {
+      font-family:var(--font-sans); font-size:.55rem;
+      color:var(--text-muted); letter-spacing:.05em;
+    }
+    .envelope-countdown {
+      font-family:var(--font-sans); font-size:.65rem;
+      color:var(--text-dim); letter-spacing:.1em; margin-top:.3rem;
+    }
+    .envelope-hint {
+      font-family:var(--font-sans); font-size:.55rem;
+      color:var(--text-muted); margin-top:1rem; letter-spacing:.05em;
+    }
+
+    /* Write form */
+    .cap-form { display:none; width:100%; flex-direction:column; gap:1rem; }
+    .cap-form.active { display:flex; }
+    .cap-form label {
+      font-family:var(--font-sans); font-size:.65rem;
+      color:var(--text-dim); letter-spacing:.1em;
+    }
+    .cap-form textarea {
+      width:100%; min-height:180px; padding:1rem;
+      background:var(--bg-card); border:1px solid var(--border);
+      color:var(--text); font-family:var(--font-serif);
+      font-size:.85rem; line-height:1.8; font-weight:300;
+      resize:vertical; outline:none; transition:border .3s;
+    }
+    .cap-form textarea:focus { border-color:rgba(201,169,110,0.3); }
+    .cap-form .date-options {
+      display:grid; grid-template-columns:1fr 1fr; gap:.4rem;
+    }
+    .cap-form .date-opt {
+      padding:.6rem; border:1px solid var(--border);
+      background:var(--bg-card); color:var(--text);
+      font-family:var(--font-sans); font-size:.7rem;
+      cursor:pointer; transition:all .3s; text-align:center;
+      border-radius:4px; touch-action:manipulation;
+    }
+    .cap-form .date-opt.selected { border-color:var(--gold-dim); background:rgba(201,169,110,0.08); color:var(--gold); }
+    .cap-form .date-opt:hover { border-color:var(--gold-dim); }
+    .cap-form .cap-submit {
+      padding:.8rem; border:1px solid rgba(201,169,110,0.3);
+      background:rgba(201,169,110,0.1); color:var(--gold);
+      font-family:var(--font-sans); font-size:.75rem; letter-spacing:.15em;
+      cursor:pointer; transition:all .3s; border-radius:4px;
+      touch-action:manipulation;
+    }
+    .cap-form .cap-submit:hover { background:rgba(201,169,110,0.2); }
+    .cap-form .cap-submit:active { transform:scale(0.97); }
+
+    /* Revealed letter */
+    .letter-reveal { display:none; width:100%; }
+    .letter-reveal.active { display:block; }
+    .letter-paper {
+      background:var(--bg-card); border:1px solid var(--border);
+      padding:2.5rem 2rem; line-height:2.2;
+    }
+    .letter-paper .letter-heading {
+      font-family:var(--font-sans); font-size:.55rem;
+      letter-spacing:.2em; color:var(--gold-dim); margin-bottom:1.5rem;
+    }
+    .letter-paper .letter-body {
+      font-size:.9rem; font-weight:300; white-space:pre-wrap;
+      color:var(--text); min-height:100px;
+    }
+    .letter-paper .letter-body .lline {
+      display:block; opacity:0;
+      animation:lreveal .5s ease forwards;
+    }
+    @keyframes lreveal {
+      0% { opacity:0; transform:translateY(8px); }
+      100% { opacity:1; transform:translateY(0); }
+    }
+    .letter-paper .letter-foot {
+      margin-top:2rem; font-family:var(--font-sans);
+      font-size:.5rem; color:var(--text-muted); letter-spacing:.1em;
+    }
+    .letter-actions {
+      display:flex; gap:.5rem; margin-top:1rem; justify-content:center;
+    }
+    .letter-actions .la-btn {
+      padding:.5rem 1.2rem; border:1px solid var(--border);
+      background:var(--bg-card); color:var(--text-dim);
+      font-family:var(--font-sans); font-size:.7rem;
+      cursor:pointer; border-radius:4px; transition:all .3s;
+      touch-action:manipulation;
+    }
+    .letter-actions .la-btn:hover { border-color:var(--gold-dim); color:var(--gold); }
+    .letter-actions .la-btn.danger { color:var(--text-muted); }
+    .letter-actions .la-btn.danger:hover { color:#c97e6e; border-color:rgba(201,126,110,0.3); }
+
+    @media (max-width:480px) {
+      body { padding-top:4rem; }
+      .cap-body { padding:.5rem 1rem 8rem; }
+      .envelope-wrap { max-width:280px; }
+      .envelope-body { padding:2rem 1.2rem 1.5rem; }
+      .envelope-icon { font-size:2rem; }
+      .cap-form textarea { min-height:140px; font-size:.8rem; }
+      .letter-paper { padding:1.5rem 1.2rem; }
+      .letter-paper .letter-body { font-size:.85rem; }
+      .cap-form .date-opt { font-size:.65rem; padding:.5rem; }
+    }
+    @media (max-width:374px) {
+      .cap-form .date-options { grid-template-columns:1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="cap-header">
+    <a href="../index.html" class="back-link">← 돌아가기</a>
+    <h1>시간 캡슐</h1>
+    <span></span>
+  </header>
+
+  <div class="stars" id="stars"></div>
+
+  <nav class="mode-nav">
+    <a href="../oracle/index.html" class="mode-btn">오라클</a>
+    <a href="../tarot/index.html" class="mode-btn">타로</a>
+    <a href="../comfort/index.html" class="mode-btn">처방전</a>
+    <a href="../postcard/index.html" class="mode-btn">엽서</a>
+    <a href="../capsule/index.html" class="mode-btn active">캡슐</a>
+    <a href="../wish/index.html" class="mode-btn">별자리</a>
+    <a href="../book/index.html" class="mode-btn">서재</a>
+  </nav>
+
+  <div class="cap-body">
+    <p class="cap-desc">
+      지금의 나를 기록해<br/>
+      미래의 당신에게 전하는 편지
+    </p>
+
+    <!-- Envelope display -->
+    <div class="envelope-wrap" id="envelopeWrap">
+      <div class="envelope-body" id="envBody">
+        <div class="envelope-flap"></div>
+        <div class="envelope-seal" id="envSeal"></div>
+        <div class="envelope-icon" id="envIcon">✧</div>
+        <div class="envelope-status" id="envStatus">봉인된 편지</div>
+        <div class="envelope-date" id="envDate"></div>
+        <div class="envelope-countdown" id="envCountdown"></div>
+        <div class="envelope-hint" id="envHint"></div>
+      </div>
+    </div>
+
+    <!-- Write form -->
+    <div class="cap-form" id="capForm">
+      <label>미래의 나에게 할 말</label>
+      <textarea id="capText" placeholder="지금의 마음을 적어보세요..."></textarea>
+      <label>열어볼 날짜</label>
+      <div class="date-options" id="dateOptions">
+        <div class="date-opt" data-days="1">내일</div>
+        <div class="date-opt" data-days="7">7일 후</div>
+        <div class="date-opt" data-days="30" data-selected>한 달 후</div>
+        <div class="date-opt" data-days="365">1년 후</div>
+      </div>
+      <button class="cap-submit" id="capSubmit">캡슐 봉인하기</button>
+    </div>
+
+    <!-- Revealed letter -->
+    <div class="letter-reveal" id="letterReveal">
+      <div class="letter-paper">
+        <div class="letter-heading" id="letterHeading"></div>
+        <div class="letter-body" id="letterBody"></div>
+        <div class="letter-foot" id="letterFoot"></div>
+      </div>
+      <div class="letter-actions">
+        <button class="la-btn" id="laReseal">다시 봉인하기</button>
+        <button class="la-btn danger" id="laDelete">삭제</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">그리움이 닿는 곳</div>
+
+  <script>
+    var STORAGE_KEY = 'letter_capsule';
+
+    function getCapsule() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e) { return null; }
+    }
+
+    function setCapsule(d) { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
+    function clearCapsule() { localStorage.removeItem(STORAGE_KEY); }
+
+    var selectedDays = 30;
+    var tick = null;
+
+    // Date option selection
+    document.querySelectorAll('.date-opt').forEach(function(el) {
+      el.addEventListener('click', function() {
+        document.querySelectorAll('.date-opt').forEach(function(x) { x.classList.remove('selected'); });
+        this.classList.add('selected');
+        selectedDays = parseInt(this.getAttribute('data-days'), 10);
+      });
+      if (el.hasAttribute('data-selected')) el.classList.add('selected');
+    });
+
+    // Helpers
+    function pad2(n) { return String(n).padStart(2, '0'); }
+
+    function formatDate(d) {
+      return d.getFullYear() + '년 ' + (d.getMonth()+1) + '월 ' + d.getDate() + '일';
+    }
+
+    function formatCountdown(ms) {
+      if (ms <= 0) return '';
+      var s = Math.floor(ms / 1000);
+      var d = Math.floor(s / 86400);
+      s -= d * 86400;
+      var h = Math.floor(s / 3600);
+      s -= h * 3600;
+      var m = Math.floor(s / 60);
+      s -= m * 60;
+      if (d > 0) return d + '일 ' + h + '시간 ' + m + '분 남음';
+      if (h > 0) return h + '시간 ' + m + '분 ' + s + '초 남음';
+      if (m > 0) return m + '분 ' + s + '초 남음';
+      return s + '초 남음';
+    }
+
+    function updateUI() {
+      var cap = getCapsule();
+      var f = document.getElementById('capForm');
+      var ew = document.getElementById('envelopeWrap');
+      var lr = document.getElementById('letterReveal');
+
+      f.classList.remove('active');
+      lr.classList.remove('active');
+      ew.style.display = '';
+
+      if (!cap) {
+        // Show form
+        f.classList.add('active');
+        ew.style.display = 'none';
+        return;
+      }
+
+      // Show envelope
+      var now = Date.now();
+      var openAt = cap.openDate;
+      var canOpen = now >= openAt;
+
+      document.getElementById('envIcon').textContent = canOpen ? '✉' : '✧';
+      document.getElementById('envStatus').textContent = canOpen ? '도착한 편지' : '봉인된 편지';
+      document.getElementById('envDate').textContent = formatDate(new Date(openAt)) + ' 도착 예정';
+
+      if (canOpen) {
+        document.getElementById('envCountdown').textContent = '지금 열어볼 수 있습니다';
+        document.getElementById('envHint').textContent = '탭하여 편지를 열어보세요';
+        document.getElementById('envelopeWrap').classList.add('can-open');
+      } else {
+        document.getElementById('envelopeWrap').classList.remove('can-open');
+        document.getElementById('envHint').textContent = '기다리면 시간이 찾아옵니다';
+        if (tick) clearInterval(tick);
+        tick = setInterval(function() {
+          var left = cap.openDate - Date.now();
+          document.getElementById('envCountdown').textContent = left > 0 ? formatCountdown(left) : '';
+          if (left <= 0) { clearInterval(tick); updateUI(); }
+        }, 1000);
+        updateCountdown();
+      }
+    }
+
+    function updateCountdown() {
+      var cap = getCapsule();
+      if (!cap) return;
+      var left = cap.openDate - Date.now();
+      document.getElementById('envCountdown').textContent = left > 0 ? formatCountdown(left) : '';
+    }
+
+    // Seal capsule
+    document.getElementById('capSubmit').addEventListener('click', function() {
+      var text = document.getElementById('capText').value.trim();
+      if (!text) { alert('편지 내용을 적어주세요.'); return; }
+      var d = new Date();
+      d.setDate(d.getDate() + selectedDays);
+      d.setHours(0, 0, 0, 0);
+      setCapsule({ text: text, openDate: d.getTime(), createdAt: Date.now() });
+      updateUI();
+    });
+
+    // Open envelope
+    document.getElementById('envelopeWrap').addEventListener('click', function() {
+      var cap = getCapsule();
+      if (!cap) return;
+      if (Date.now() < cap.openDate) return;
+
+      var lr = document.getElementById('letterReveal');
+      var ew = document.getElementById('envelopeWrap');
+      ew.style.display = 'none';
+
+      var lines = cap.text.split('\n');
+      var body = document.getElementById('letterBody');
+      body.innerHTML = '';
+      lines.forEach(function(l, i) {
+        var sp = document.createElement('span');
+        sp.className = 'lline';
+        sp.textContent = l || '\u00A0';
+        sp.style.animationDelay = (i * 0.08) + 's';
+        body.appendChild(sp);
+        if (i < lines.length - 1) body.appendChild(document.createElement('br'));
+      });
+
+      document.getElementById('letterHeading').textContent = formatDate(new Date(cap.createdAt)) + '에 기록한 편지';
+      document.getElementById('letterFoot').textContent = '그리움이 닿는 곳 · ' + formatDate(new Date());
+      lr.classList.add('active');
+    });
+
+    // Reseal
+    document.getElementById('laReseal').addEventListener('click', function() {
+      document.getElementById('letterReveal').classList.remove('active');
+      updateUI();
+    });
+
+    // Delete
+    document.getElementById('laDelete').addEventListener('click', function() {
+      if (!confirm('편지를 삭제하면 다시 복구할 수 없습니다. 삭제하시겠습니까?')) return;
+      clearCapsule();
+      document.getElementById('letterReveal').classList.remove('active');
+      if (tick) clearInterval(tick);
+      updateUI();
+    });
+
+    // Stars
+    (function(){
+      var c=document.getElementById('stars');
+      for(var i=0;i<40;i++){
+        var s=document.createElement('div'); s.className='star';
+        s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*100+'%';
+        s.style.setProperty('--d',(Math.random()*4+3)+'s');
+        s.style.animationDelay=Math.random()*5+'s'; c.appendChild(s);
+      }
+    })();
+
+    updateUI();
+  </script>
+</body>
+</html>
