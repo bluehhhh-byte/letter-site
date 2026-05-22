@@ -57,10 +57,6 @@
     .spread-name-display { font-family:var(--font-serif); font-size:.85rem; color:var(--gold-dim); margin-top:.5rem; font-weight:300; }
     .spread-name-display .summary { display:block; font-family:var(--font-sans); font-size:.65rem; color:var(--text-muted); margin-top:.2rem; font-weight:300; line-height:1.5; }
 
-    /* Prompt */
-    .tarot-prompt { text-align:center; margin:0 0 1.5rem; font-family:var(--font-serif); font-size:.9rem; color:var(--text-dim); font-weight:300; line-height:1.8; }
-    .tarot-prompt .highlight { color:var(--gold); }
-
     /* Grid */
     .tarot-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(84px,1fr)); gap:.55rem; max-width:960px; width:100%; margin:0 auto; overflow:hidden; }
 
@@ -198,7 +194,6 @@
       .tarot-card.selected { transform:translateY(-3px); }
       .question-area { margin:.4rem auto .8rem; }
       .question-input { padding:.7rem .9rem; font-size:.8rem; }
-      .tarot-prompt { font-size:.75rem; margin:0 0 .8rem; }
       .spread-btn { padding:.4rem .7rem; font-size:.6rem; }
       .spread-btn .cnt { font-size:.75rem; }
       .reveal-btn { padding:.65rem 1.8rem; font-size:.65rem; }
@@ -267,11 +262,6 @@
       <div class="spread-btns" id="spreadBtns"></div>
       <div class="spread-name-display" id="spreadNameDisplay"></div>
     </div>
-
-    <p class="tarot-prompt" id="tarotPrompt">
-      마음을 집중하고 <span class="highlight">카드</span>를 선택하세요<br/>
-      <span style="font-size:.75rem;color:var(--text-muted)">각 카드는 무작위로 정방향 또는 역방향으로 나타납니다</span>
-    </p>
 
     <div class="tarot-grid" id="tarotGrid"></div>
 
@@ -366,7 +356,7 @@
     const spreadNameDisplay = document.getElementById('spreadNameDisplay');
     const spreadNameHeader = document.getElementById('spreadNameHeader');
     const maxCount = document.getElementById('maxCount');
-    const tarotPrompt = document.getElementById('tarotPrompt');
+
 
     Object.keys(SPREADS).forEach(key => {
       const s = SPREADS[key];
@@ -384,7 +374,6 @@
       spreadNameDisplay.innerHTML = currentSpread.name + ' <span class="summary">' + currentSpread.summary + '</span>';
       spreadNameHeader.textContent = currentSpread.name;
       maxCount.textContent = currentSpread.cnt;
-      tarotPrompt.innerHTML = `마음을 집중하고 <span class="highlight">${currentSpread.cnt}장의 카드</span>를 선택하세요<br/><span style="font-size:.75rem;color:var(--text-muted)">각 카드는 무작위로 정방향 또는 역방향으로 나타납니다</span>`;
       resetSelection();
     }
 
