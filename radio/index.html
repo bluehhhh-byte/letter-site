@@ -322,6 +322,7 @@
         recordEl.classList.add('spinning');
         tonearmEl.classList.add('playing');
         eqEl.classList.add('active');
+        changeTrack(currentIndex);
       } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
         isPlaying = false;
         playBtn.textContent = '▶';
@@ -330,15 +331,50 @@
         tonearmEl.classList.remove('playing');
         eqEl.classList.remove('active');
       }
-      if (event.data === YT.PlayerState.PLAYING || event.data === YT.PlayerState.PAUSED) {
-        var idx = player.getPlaylistIndex();
-        if (idx >= 0 && idx !== currentIndex) {
-          changeTrack(idx);
-        }
-      }
     }
 
     // YouTube IFrame API
+    function playPause() {
+      if (!player) return;
+      if (isPlaying) { player.pauseVideo(); }
+      else { player.playVideo(); }
+    }
+
+    function renderTracklist() {
+      var html = '';
+      PLAYLIST.forEach(function(t, i) {
+        html += '<div class="rd-tracklist-item' + (i === currentIndex ? ' active' : '') + '" data-index="' + i + '">' +
+          '<span class="rd-tracklist-num">' + (i + 1) + '</span>' +
+          '<span class="rd-tracklist-title">' + t.title + '</span>' +
+          '<span class="rd-tracklist-comment">' + t.comment + '</span>' +
+        '</div>';
+      });
+      tracklistEl.innerHTML = html;
+      tracklistEl.querySelectorAll('.rd-tracklist-item').forEach(function(el) {
+        el.addEventListener('click', function() {
+          var idx = parseInt(this.getAttribute('data-index'));
+          if (player) { playById(idx); }
+        });
+      });
+    }
+
+    function toggleTracklist() {
+      tracklistOpen = !tracklistOpen;
+      tracklistEl.classList.toggle('open', tracklistOpen);
+      listToggle.textContent = tracklistOpen ? '재생목록 닫기' : '전체 재생목록';
+    }
+
+    // Init track list
+    renderTracklist();
+    updateTrackInfo(0);
+
+    function playById(index) {
+      currentIndex = index;
+      if (player && player.loadVideoById) {
+        player.loadVideoById(PLAYLIST[index].id);
+      }
+    }
+
     function onYouTubeIframeAPIReady() {
       player = new YT.Player('player', {
         height: 240, width: 360,
@@ -346,28 +382,52 @@
           iv_load_policy: 3,
           modestbranding: 1,
           rel: 0,
-          showinfo: 0,
           controls: 0,
-          disablekb: 1,
-          fs: 0
+          fs: 0,
+          autoplay: 1,
+          mute: 1
         },
         events: {
           onReady: function() {
-            var ids = PLAYLIST.map(function(t) { return t.id; });
-            player.cuePlaylist({ list: ids, listType: 'playlist', index: 0 });
-            setTimeout(function() {
-              player.mute();
-              player.playVideo();
-              setTimeout(function() { player.unMute(); }, 300);
-            }, 800);
+            playById(0);
           },
-          onStateChange: onPlayerStateChange,
+          onStateChange: function(e) {
+            onPlayerStateChange(e);
+            if (e.data === YT.PlayerState.ENDED) {
+              var next = (currentIndex + 1) % PLAYLIST.length;
+              playById(next);
+            }
+          },
           onError: function(e) {
-            titleEl.textContent = '주파수가 흐트러졌어요 (' + e.data + ')';
-            artistEl.textContent = '잠시 후 다시 시도해 주세요';
+            var msgs = { 2:'재생목록 형식 오류', 5:'플레이어 오류', 100:'찾을 수 없는 영상', 101:'임베드 제한', 150:'임베드 제한' };
+            titleEl.textContent = '주파수가 흐트러졌어요';
+            artistEl.textContent = msgs[e.data] || '오류 코드: ' + e.data;
           }
         }
       });
+    }
+
+    function nextTrack() {
+      if (!player) return;
+      var next;
+      if (isShuffle) {
+        do { next = Math.floor(Math.random() * PLAYLIST.length); }
+        while (next === currentIndex && PLAYLIST.length > 1);
+      } else {
+        next = (currentIndex + 1) % PLAYLIST.length;
+      }
+      playById(next);
+    }
+
+    function prevTrack() {
+      if (!player) return;
+      var prev = (currentIndex - 1 + PLAYLIST.length) % PLAYLIST.length;
+      playById(prev);
+    }
+
+    function toggleShuffle() {
+      isShuffle = !isShuffle;
+      shuffleBtn.style.opacity = isShuffle ? '1' : '0.4';
     }
 
     // Load YouTube API
