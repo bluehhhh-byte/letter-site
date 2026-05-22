@@ -367,14 +367,14 @@
     function handleFirstTap() {
       if (hasUnmuted || !player) return;
       hasUnmuted = true;
-      if (isShuffle && IS_PLAYLIST) {
-        player.playVideoAt(initialRandomIdx);
-      } else {
-        player.playVideo();
-      }
       document.getElementById('rdMuteHint').style.display = 'none';
       document.removeEventListener('click', handleFirstTap);
       document.removeEventListener('touchstart', handleFirstTap);
+      if (isShuffle && IS_PLAYLIST) {
+        player.loadPlaylist({ list: PLAY_LIST_ID, listType: 'playlist', index: initialRandomIdx });
+      } else {
+        player.playVideo();
+      }
     }
 
     function nextTrack() {
