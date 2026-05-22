@@ -305,8 +305,9 @@
 
       <div class="result-actions">
         <button class="result-btn" id="resultCloseBtn">다시 선택하기</button>
-        <button class="result-btn primary" id="resultAIBtn">🤖 AI 해석</button>
-        <button class="result-btn primary" id="resultRedrawBtn">새로 뽑기</button>
+        <button class="result-btn primary" id="resultAISummaryBtn">🔍 AI 요약</button>
+        <button class="result-btn" id="resultAICopyBtn">📋 AI 분석(복사)</button>
+        <button class="result-btn" id="resultRedrawBtn">새로 뽑기</button>
       </div>
     </div>
   </div>
@@ -436,7 +437,8 @@
     revealBtn.addEventListener('click',revealCards);
     resultCloseBtn.addEventListener('click',autoDraw);
     resultRedrawBtn.addEventListener('click',()=>{ shuffleGrid(); resetSelection(); window.scrollTo({top:0,behavior:'smooth'}); });
-    document.getElementById('resultAIBtn').addEventListener('click', openAIInterpretation);
+    document.getElementById('resultAISummaryBtn').addEventListener('click', openAISummary);
+    document.getElementById('resultAICopyBtn').addEventListener('click', openAICopy);
 
     function buildAIPrompt() {
       if (!_lastCardData) return '';
@@ -456,13 +458,19 @@
       return p;
     }
 
-    async function openAIInterpretation() {
+    function openAISummary() {
+      if (!_lastCardData) return;
+      const q = '타로 리딩 분석 ' + _lastCardData.map((d,i)=>`${i+1}.${d.card.name}`).join(' ');
+      location.href = 'https://www.google.com/search?q=' + encodeURIComponent(q) + '&udm=50&source=hp';
+    }
+
+    async function openAICopy() {
       const text = buildAIPrompt();
       if (!text) return;
       try { await navigator.clipboard.writeText(text); } catch(e) {}
-      const q = '타로 리딩 분석 ' + _lastCardData.map((d,i)=>`${i+1}.${d.card.name}`).join(' ');
-      const url = 'https://www.google.com/search?q=' + encodeURIComponent(q) + '&udm=50&source=hp';
-      location.href = url;
+      const btn=document.getElementById('resultAICopyBtn');
+      btn.textContent='✅ 복사됨';
+      setTimeout(()=>{ btn.textContent='📋 AI 분석(복사)'; },2000);
     }
 
     function shuffleGrid(){
