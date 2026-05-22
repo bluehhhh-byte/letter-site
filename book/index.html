@@ -155,6 +155,21 @@
     }
     .bk-retry:hover { border-color:var(--gold-dim); color:var(--gold); }
 
+    .bk-genre-filter {
+      width:100%; max-width:560px;
+      display:flex; flex-wrap:wrap; gap:.35rem;
+      justify-content:center; padding:.5rem 0;
+    }
+    .bk-genre-btn {
+      font-family:var(--font-sans); font-size:.6rem;
+      letter-spacing:.08em; padding:.3rem .7rem;
+      border:1px solid var(--border); background:var(--bg-card);
+      color:var(--text-dim); cursor:pointer; transition:all .3s;
+      touch-action:manipulation; border-radius:3px;
+    }
+    .bk-genre-btn:hover { border-color:var(--gold-dim); color:var(--gold); }
+    .bk-genre-btn.active { background:rgba(201,169,110,0.12); border-color:var(--gold-dim); color:var(--gold); }
+
     @media (max-width:480px) {
       body { padding-top:4rem; }
       .bk-body { padding:.5rem 1rem 8rem; gap:1rem; }
@@ -257,6 +272,15 @@
       return arr.sort(function(a, b) { return (b.salesPoint || 0) - (a.salesPoint || 0); });
     }
 
+    function extractGenre(book) {
+      if (!book.genre) return '기타';
+      if (book.genre.indexOf('>') > 0) {
+        var parts = book.genre.split('>');
+        return parts.length > 1 ? parts[1].trim() : parts[0].trim();
+      }
+      return book.genre;
+    }
+
     function shuffleArray(arr) {
       for (var i = arr.length - 1; i > 0; i--) {
         var j = Math.floor(Math.random() * (i + 1));
@@ -265,19 +289,64 @@
       return arr;
     }
 
-    function renderBooks(data) {
-      loading.style.display = 'none';
-      if (!data.books || data.books.length === 0) {
-        body.insertAdjacentHTML('beforeend', '<div class="bk-error">아직 책이 도착하지 않았습니다</div>');
+    var allBooks = [];
+    var currentGenre = '전체';
+
+    function renderGenreFilter() {
+      var genreSet = {};
+      allBooks.forEach(function(b) { genreSet[extractGenre(b)] = true; });
+      var genres = Object.keys(genreSet).sort();
+      var html = '<div class="bk-genre-filter" id="bkGenreFilter">' +
+        '<button class="bk-genre-btn' + (currentGenre === '전체' ? ' active' : '') + '" data-genre="전체">전체</button>';
+      genres.forEach(function(g) {
+        html += '<button class="bk-genre-btn' + (currentGenre === g ? ' active' : '') + '" data-genre="' + g + '">' + g + '</button>';
+      });
+      html += '</div>';
+      var existing = document.getElementById('bkGenreFilter');
+      if (existing) existing.remove();
+      body.insertAdjacentHTML('beforeend', html);
+      document.getElementById('bkGenreFilter').addEventListener('click', function(e) {
+        if (e.target.classList.contains('bk-genre-btn')) {
+          filterByGenre(e.target.getAttribute('data-genre'));
+        }
+      });
+    }
+
+    function filterByGenre(genre) {
+      currentGenre = genre;
+      var existingGrid = document.getElementById('bkGrid');
+      if (existingGrid) existingGrid.remove();
+      var existingPick = body.querySelector('.bk-pick');
+      if (existingPick) existingPick.remove();
+      var btns = document.querySelectorAll('.bk-genre-btn');
+      btns.forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-genre') === genre); });
+      renderGrid();
+    }
+
+    function bkCardHtml(b) {
+      var badge = b.isChoice ? '<div class="bk-badge">Choice</div>' : '';
+      return badge +
+        (b.coverImg ? '<div class="bk-cover-wrap"><img class="bk-cover" src="' + proxyCover(b.coverImg) + '" alt="' + b.title + '" loading="lazy" onerror="this.style.display=\'none\';this.parentElement.style.display=\'none\'" /></div>' : '') +
+        '<div class="bk-info">' +
+        '<div class="bk-title">' + b.title + '</div>' +
+        '<div class="bk-author">' + b.author + '</div>' +
+        '<div class="bk-meta">' +
+        (b.nationality ? '<span>국적</span> ' + b.nationality + ' · ' : '') +
+        '<span>장르</span> ' + extractGenre(b) +
+        ' · <span>발행</span> ' + b.year +
+        ' · <span>출판</span> ' + b.publisher +
+        '</div>' +
+        '<div class="bk-summary">' + b.summary + '</div>' +
+        '</div>';
+    }
+
+    function renderGrid() {
+      var filtered = currentGenre === '전체' ? allBooks.slice() : allBooks.filter(function(b) { return extractGenre(b) === currentGenre; });
+      if (filtered.length === 0) {
+        body.insertAdjacentHTML('beforeend', '<div class="bk-error">이 분야의 책이 아직 없습니다</div>');
         return;
       }
-
-      body.insertAdjacentHTML('beforeend',
-        '<div class="bk-narrative">' + NARRATIVES[narrativeIdx] + '</div>');
-
-      var books = data.books;
-      var shuffled = shuffleArray([].concat(books));
-
+      var shuffled = shuffleArray([].concat(filtered));
       var pick = shuffled[0];
       var pickHtml =
         '<a href="' + pick.detailUrl + '" target="_blank" rel="noopener" class="bk-pick">' +
@@ -288,7 +357,7 @@
         '    <div class="bk-pick-author">' + pick.author + '</div>' +
         '    <div class="bk-pick-meta">' +
         (pick.nationality ? '      <span>국적</span> ' + pick.nationality + ' · ' : '') +
-        '      <span>장르</span> ' + pick.genre +
+        '      <span>장르</span> ' + extractGenre(pick) +
         '      · <span>발행</span> ' + pick.year +
         '      · <span>출판</span> ' + pick.publisher +
         '    </div>' +
@@ -299,37 +368,38 @@
 
       body.insertAdjacentHTML('beforeend', '<div class="bk-grid" id="bkGrid"></div>');
       var grid = document.getElementById('bkGrid');
-      var remaining = books.slice(1, 9);
+      var remaining = filtered.slice(1, 9);
       remaining.forEach(function(b) {
         var card = document.createElement('a');
         card.className = 'bk-card';
         card.href = b.detailUrl;
         card.target = '_blank';
         card.rel = 'noopener';
-        var badge = b.isChoice ? '<div class="bk-badge">Choice</div>' : '';
-        card.innerHTML =
-          badge +
-          (b.coverImg ? '<div class="bk-cover-wrap"><img class="bk-cover" src="' + proxyCover(b.coverImg) + '" alt="' + b.title + '" loading="lazy" onerror="this.style.display=\'none\';this.parentElement.style.display=\'none\'" /></div>' : '') +
-          '<div class="bk-info">' +
-          '<div class="bk-title">' + b.title + '</div>' +
-          '<div class="bk-author">' + b.author + '</div>' +
-          '<div class="bk-meta">' +
-            (b.nationality ? '<span>국적</span> ' + b.nationality + ' · ' : '') +
-            '<span>장르</span> ' + b.genre +
-            ' · <span>발행</span> ' + b.year +
-            ' · <span>출판</span> ' + b.publisher +
-          '</div>' +
-          '<div class="bk-summary">' + b.summary + '</div>' +
-          '</div>';
+        card.innerHTML = bkCardHtml(b);
         grid.appendChild(card);
       });
+    }
+
+    function renderBooks(data) {
+      loading.style.display = 'none';
+      if (!data.books || data.books.length === 0) {
+        body.insertAdjacentHTML('beforeend', '<div class="bk-error">아직 책이 도착하지 않았습니다</div>');
+        return;
+      }
+      allBooks = data.books;
+      currentGenre = '전체';
+
+      body.insertAdjacentHTML('beforeend',
+        '<div class="bk-narrative">' + NARRATIVES[narrativeIdx] + '</div>');
+      renderGenreFilter();
+      renderGrid();
     }
 
     function fetchBooks() {
       loading.textContent = '별빛 아래 책을 꺼내는 중...';
       loading.style.display = '';
 
-      var existing = body.querySelectorAll('.bk-narrative, .bk-pick, .bk-grid, .bk-error, .bk-retry');
+      var existing = body.querySelectorAll('.bk-narrative, .bk-pick, .bk-grid, .bk-error, .bk-retry, .bk-genre-filter');
       existing.forEach(function(el) { if (el.id !== 'bkLoading') el.remove(); });
 
       var apiUrl;
