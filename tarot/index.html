@@ -454,7 +454,7 @@
     }
 
     function openAIInterpretation() {
-      const text = buildPromptText();
+      const text = _lastReading ? `타로 리딩 분석:\n${_lastReading.title}\n${_lastReading.text}\n${_lastReading.detail}` : buildPromptText();
       if (!text) return;
       navigator.clipboard.writeText(text).then(()=>{
         const btn=document.getElementById('resultAIBtn');
@@ -501,7 +501,7 @@
       const revRatio = revCount / cards.length;
 
       const allKeywords = cards.map(c => c.card.keywords || '').filter(Boolean);
-      const keywordSummary = allKeywords.length > 0
+      const kw = allKeywords.length > 0
         ? allKeywords.join(' · ')
         : cards.map(c => c.reversed ? c.card.name + '(역)' : c.card.name).join(', ');
 
@@ -512,32 +512,41 @@
 
       let lines = [];
 
-      // Line 1: 키워드
-      lines.push(`✨ 키워드: ${keywordSummary}`);
+      // 1 — 키워드
+      lines.push(`✨ 키워드: ${kw}`);
 
-      // Line 2: 분석
-      let analysis = '';
-      if (majorCount >= cards.length/2) analysis = `메이저 ${majorCount}장 — 운명적 메시지가 강합니다.`;
-      else if (majorCount === 0) analysis = `일상의 변화에 주목하세요.`;
-      else analysis = `메이저와 마이너가 조화롭게 섞여 있습니다.`;
+      // 2 — 메이저/마이너
+      if (majorCount >= cards.length/2) lines.push(`메이저 ${majorCount}장 — 우주가 큰 메시지를 보내고 있습니다. 인생의 중요한 전환점일 수 있습니다.`);
+      else if (majorCount === 0) lines.push(`모두 마이너 아르카나 — 일상의 변화와 성장에 집중하세요. 작은 움직임이 큰 변화를 만듭니다.`);
+      else lines.push(`메이저 ${majorCount}장, 마이너 ${cards.length-majorCount}장 — 일상 속에 중요한 의미가 숨어 있습니다.`);
 
-      if (revRatio >= 0.6) analysis += ` 역방향 ${revCount}장 — 내면 성찰이 필요한 시기입니다.`;
-      else if (revRatio === 0) analysis += ` 모두 정방향 — 에너지 흐름이 좋습니다.`;
-      else analysis += ` 역방향 ${revCount}장 — 특정 영역의 재고가 필요합니다.`;
+      // 3 — 역방향
+      if (revRatio >= 0.6) lines.push(`역방향 ${revCount}장 — 내면의 갈등이나 저항이 있을 수 있습니다. 같은 카드의 정방향 의미를 되새겨 조정점을 찾아보세요.`);
+      else if (revRatio === 0) lines.push(`모두 정방향 — 에너지 흐름이 막힘 없이 열려 있습니다. 지금은 움직이기에 좋은 때입니다.`);
+      else lines.push(`역방향 ${revCount}장 — 특정 영역의 도전이나 재고가 필요합니다. 해당 카드의 위치를 주목하세요.`);
 
+      // 4 — 원소
       if (suits.length === 1) {
         const s = TAROT_SUITS[suits[0]];
-        analysis += ` 전원 ${s.name} (${s.element}) 계열.`;
+        lines.push(`전원 ${s.name}(${s.element}) 계열 — ${s.desc}와 관련된 주제에 에너지가 집중되어 있습니다.`);
+      } else if (elements.length > 0) {
+        const em = Object.entries(elemCount).map(([k,v])=>`${k} ${v}개`).join(', ');
+        let extra = '';
+        if (elemCount['불'] && elemCount['물']) extra = ' 불과 물 — 열정과 감정의 균형이 중요합니다.';
+        else if (elemCount['불'] && elemCount['땅']) extra = ' 불과 땅 — 도전과 현실의 조화가 필요합니다.';
+        else if (elemCount['공기'] && elemCount['물']) extra = ' 공기와 물 — 이성과 감정 사이의 균형을 찾으세요.';
+        lines.push(`원소 분포 ${em}.${extra}`);
+      } else {
+        lines.push(`메이저 위주 — 정신적·운명적 에너지가 강하게 작용 중입니다.`);
       }
-      lines.push(analysis);
 
-      // Line 3: 핵심 카드
+      // 5 — 핵심 조언
       const first = cards[0];
       const last = cards[cards.length-1];
-      const trim = (s,n=22) => s.length > n ? s.slice(0,n)+'…' : s;
-      let advice = `①${first.card.name}(${first.posName}) ${trim(getMeaning(first.card, first.reversed))}`;
+      const trim = (s,n=20) => s.length > n ? s.slice(0,n)+'…' : s;
+      let advice = `★ ${first.posName}: ${first.card.name} — ${trim(getMeaning(first.card, first.reversed))}`;
       if (cards.length > 1) {
-        advice += ` ②${last.card.name}(${last.posName}) ${trim(getMeaning(last.card, last.reversed))}`;
+        advice += `\n★ ${last.posName}: ${last.card.name} — ${trim(getMeaning(last.card, last.reversed))}`;
       }
       lines.push(advice);
 
