@@ -297,7 +297,7 @@
     var isShuffle = true;
     var hasUnmuted = false;
     var commentIdx = Math.floor(Math.random() * COMMENTS.length);
-    var initialRandomIdx = Math.floor(Math.random() * PLAYLIST_IDS.length);
+    var firstPlay = true;
 
     var titleEl = document.getElementById('rdTitle');
     var artistEl = document.getElementById('rdArtist');
@@ -326,6 +326,11 @@
 
     function onPlayerStateChange(event) {
       if (event.data === YT.PlayerState.PLAYING) {
+        if (firstPlay) {
+          firstPlay = false;
+          var len = player.getPlaylist().length;
+          if (len > 1) { player.playVideoAt(Math.floor(Math.random() * len)); return; }
+        }
         isPlaying = true;
         playBtn.textContent = '⏸';
         playBtn.classList.add('playing');
@@ -348,7 +353,8 @@
         tonearmEl.classList.remove('playing');
         eqEl.classList.remove('active');
         if (event.data === YT.PlayerState.ENDED) {
-          player.loadVideoById(PLAYLIST_IDS[Math.floor(Math.random() * PLAYLIST_IDS.length)]);
+          var len = player.getPlaylist().length;
+          player.playVideoAt(Math.floor(Math.random() * len));
         }
       }
     }
@@ -368,32 +374,22 @@
       document.getElementById('rdMuteHint').style.display = 'none';
       document.removeEventListener('click', handleFirstTap);
       document.removeEventListener('touchstart', handleFirstTap);
-      player.loadVideoById(PLAYLIST_IDS[initialRandomIdx]);
+      player.loadPlaylist(PLAYLIST_ID);
     }
 
     function nextTrack() {
       if (!player) return;
-      var curId;
-      try { curId = player.getVideoData().video_id; } catch(e) {}
-      var curIdx = curId ? PLAYLIST_IDS.indexOf(curId) : -1;
       if (isShuffle) {
-        var idx;
-        do { idx = Math.floor(Math.random() * PLAYLIST_IDS.length); }
-        while (PLAYLIST_IDS.length > 1 && idx === curIdx);
-        player.loadVideoById(PLAYLIST_IDS[idx]);
+        var len = player.getPlaylist().length;
+        player.playVideoAt(Math.floor(Math.random() * len));
       } else {
-        var next = (curIdx + 1) % PLAYLIST_IDS.length;
-        player.loadVideoById(PLAYLIST_IDS[next]);
+        player.nextVideo();
       }
     }
 
     function prevTrack() {
       if (!player) return;
-      var curId;
-      try { curId = player.getVideoData().video_id; } catch(e) {}
-      var curIdx = curId ? PLAYLIST_IDS.indexOf(curId) : -1;
-      var prev = curIdx < 0 ? Math.floor(Math.random() * PLAYLIST_IDS.length) : (curIdx - 1 + PLAYLIST_IDS.length) % PLAYLIST_IDS.length;
-      player.loadVideoById(PLAYLIST_IDS[prev]);
+      player.previousVideo();
     }
 
     function toggleShuffle() {
@@ -418,12 +414,8 @@
           onStateChange: onPlayerStateChange,
           onError: function(e) {
             var msgs = { 2:'재생목록 형식 오류', 5:'플레이어 오류', 100:'찾을 수 없는 영상', 101:'임베드 제한', 150:'임베드 제한' };
-            if (e.data === 2 || e.data === 5 || e.data === 100) {
-              player.loadVideoById(PLAYLIST_IDS[Math.floor(Math.random() * PLAYLIST_IDS.length)]);
-            } else {
-              titleEl.textContent = '주파수가 흐트러졌어요';
-              artistEl.textContent = msgs[e.data] || '오류 코드: ' + e.data;
-            }
+            titleEl.textContent = '주파수가 흐트러졌어요';
+            artistEl.textContent = msgs[e.data] || '오류 코드: ' + e.data;
           }
         }
       });

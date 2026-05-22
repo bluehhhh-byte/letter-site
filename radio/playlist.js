@@ -1,8 +1,1 @@
-var PLAYLIST_IDS = [
-  'CCNI66vlzZE',
-  'FNRkH_rTlIk',
-  'YBzJ0jmHv-4',
-  'jIIdLgUbj5E',
-  'NrfikKxF4Ps',
-  'XLNlzHY_SFs'
-];
+var PLAYLIST_ID = 'PLuVVPV8so2OVFY0L90sAuIsny9JFqFKvS';
