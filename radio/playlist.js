@@ -14,5 +14,7 @@ var PLAYLIST = [
   { id:'u0XfoXOMhD4', title:'우산', artist:'윤하 (Younha)',
     comment:'비 오는 날, 생각나는 사람이 있다면 그것만으로도 특별한 거야' },
   { id:'J7RlR2BYmzI', title:'어떻게 이별까지 사랑하겠어, 널 사랑하는 거지', artist:'악동뮤지션 (AKMU)',
-    comment:'사랑한다는 말보다 더 따뜻한 말은, 함께 있을게' }
+    comment:'사랑한다는 말보다 더 따뜻한 말은, 함께 있을게' },
+  { id:'XLNlzHY_SFs', title:'Bored (Bored)', artist:'Jeff Bernat',
+    comment:'심심한 하루도, 네가 떠오르면 그냥 견딜 만해져' }
 ];
