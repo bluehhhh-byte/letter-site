@@ -1,0 +1,24 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "kordoc": {
+      "type": "local",
+      "command": ["npx", "-y", "kordoc@latest", "mcp"],
+      "enabled": true
+    }
+  },
+  "command": {
+    "vpn:status": {
+      "description": "VPN 연결 상태 확인",
+      "template": "VPN 상태를 확인해주세요."
+    },
+    "vpn:connect": {
+      "description": "VPN 연결 (네트워크 차단 우회)",
+      "template": "Windscribe VPN에 로그인하고 연결해주세요."
+    },
+    "vpn:disconnect": {
+      "description": "VPN 연결 해제",
+      "template": "Windscribe VPN 연결을 해제해주세요."
+    }
+  }
+}
