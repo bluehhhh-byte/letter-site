@@ -166,6 +166,13 @@
     @media (hover:hover) { .result-btn.primary:hover { background:var(--gold); color:var(--bg); } }
     .result-btn:active { transform:scale(0.96); }
 
+    /* Card selecting state: hide nav + maximize grid */
+    body.card-selecting .mode-nav,
+    body.card-selecting .footer { display:none; }
+    @media (max-width:480px) {
+      body.card-selecting .tarot-body { padding-bottom:1.5rem; }
+    }
+
     /* Animations */
     /* Loading */
     .cr-loading { display:none; text-align:center; padding:2rem 0; }
@@ -434,6 +441,7 @@
         else card.classList.remove('disabled');
       });
       revealBtn.classList.toggle('visible',selected.length===currentSpread.cnt);
+      document.body.classList.toggle('card-selecting', selected.length > 0);
     }
 
     // ─── Event listeners ──────────────────────────────────────────────────
