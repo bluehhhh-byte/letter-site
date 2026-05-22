@@ -271,13 +271,25 @@
 
   <div id="player" style="position:absolute;left:-9999px;top:0;width:360px;height:240px;overflow:hidden"></div>
 
-  <script src="playlist.js"></script>
   <script>
+    var PLAY_LIST_ID = 'PLuVVPV8so2OUY5YLiBBEXR-nqzQ2HOj4F';
+    var COMMENTS = [
+      '같은 밤, 같은 음악 속에 우리가 있다',
+      '멀리 있어도 이 멜로디는 닿을 거야',
+      '지친 하루의 끝, 이 노래가 위로가 되길',
+      '네가 없는 자리도 음악으로 채울게',
+      '별빛보다 선명한 네 목소리가 그리운 밤',
+      '잠들기 전, 너를 생각하며 듣는 곡',
+      '이 노래를 들으면 네가 떠올라',
+      '시간이 지나도 이 음악은 기억될 거야',
+      '혼자인 것 같아도 같은 하늘 아래 있잖아',
+      '조용히 너에게 보내는 저녁 인사'
+    ];
+
     var player = null;
     var isPlaying = false;
     var isShuffle = false;
-    var currentIndex = 0;
-    var tracklistOpen = false;
+    var commentIdx = Math.floor(Math.random() * COMMENTS.length);
 
     var titleEl = document.getElementById('rdTitle');
     var artistEl = document.getElementById('rdArtist');
@@ -293,25 +305,15 @@
     var listToggle = document.getElementById('rdListToggle');
     var tracklistEl = document.getElementById('rdTracklist');
 
-    function updateTrackInfo(index) {
-      var track = PLAYLIST[index];
-      titleEl.textContent = track.title;
+    function updateTrackInfo(data) {
+      var title = data ? data.title : '';
+      var author = data ? data.author : '';
+      titleEl.textContent = title || '주파수를 맞추는 중...';
       titleEl.classList.remove('changing');
-      artistEl.textContent = track.artist;
-      commentEl.textContent = track.comment;
+      artistEl.textContent = author || '';
+      commentIdx = (commentIdx + 1) % COMMENTS.length;
+      commentEl.textContent = COMMENTS[commentIdx];
       commentEl.classList.remove('changing');
-      renderTracklist();
-    }
-
-    function changeTrack(index) {
-      currentIndex = index;
-      titleEl.classList.add('changing');
-      commentEl.classList.add('changing');
-      turntableEl.classList.add('fading');
-      setTimeout(function() {
-        updateTrackInfo(index);
-        turntableEl.classList.remove('fading');
-      }, 400);
     }
 
     function onPlayerStateChange(event) {
@@ -322,7 +324,14 @@
         recordEl.classList.add('spinning');
         tonearmEl.classList.add('playing');
         eqEl.classList.add('active');
-        changeTrack(currentIndex);
+        var data = player.getVideoData();
+        titleEl.classList.add('changing');
+        commentEl.classList.add('changing');
+        turntableEl.classList.add('fading');
+        setTimeout(function() {
+          updateTrackInfo(data);
+          turntableEl.classList.remove('fading');
+        }, 400);
       } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
         isPlaying = false;
         playBtn.textContent = '▶';
@@ -333,48 +342,29 @@
       }
     }
 
-    // YouTube IFrame API
     function playPause() {
       if (!player) return;
       if (isPlaying) { player.pauseVideo(); }
       else { player.playVideo(); }
     }
 
-    function renderTracklist() {
-      var html = '';
-      PLAYLIST.forEach(function(t, i) {
-        html += '<div class="rd-tracklist-item' + (i === currentIndex ? ' active' : '') + '" data-index="' + i + '">' +
-          '<span class="rd-tracklist-num">' + (i + 1) + '</span>' +
-          '<span class="rd-tracklist-title">' + t.title + '</span>' +
-          '<span class="rd-tracklist-comment">' + t.comment + '</span>' +
-        '</div>';
-      });
-      tracklistEl.innerHTML = html;
-      tracklistEl.querySelectorAll('.rd-tracklist-item').forEach(function(el) {
-        el.addEventListener('click', function() {
-          var idx = parseInt(this.getAttribute('data-index'));
-          if (player) { playById(idx); }
-        });
-      });
+    function nextTrack() {
+      if (!player) return;
+      if (isShuffle) { player.playVideoAt(Math.floor(Math.random() * player.getPlaylist().length)); }
+      else { player.nextVideo(); }
     }
 
-    function toggleTracklist() {
-      tracklistOpen = !tracklistOpen;
-      tracklistEl.classList.toggle('open', tracklistOpen);
-      listToggle.textContent = tracklistOpen ? '재생목록 닫기' : '전체 재생목록';
+    function prevTrack() {
+      if (!player) return;
+      player.previousVideo();
     }
 
-    // Init track list
-    renderTracklist();
-    updateTrackInfo(0);
-
-    function playById(index) {
-      currentIndex = index;
-      if (player && player.loadVideoById) {
-        player.loadVideoById(PLAYLIST[index].id);
-      }
+    function toggleShuffle() {
+      isShuffle = !isShuffle;
+      shuffleBtn.style.opacity = isShuffle ? '1' : '0.4';
     }
 
+    // YouTube IFrame API
     function onYouTubeIframeAPIReady() {
       player = new YT.Player('player', {
         height: 240, width: 360,
@@ -389,15 +379,9 @@
         },
         events: {
           onReady: function() {
-            playById(0);
+            player.loadPlaylist({ list: PLAY_LIST_ID, listType: 'playlist', index: 0 });
           },
-          onStateChange: function(e) {
-            onPlayerStateChange(e);
-            if (e.data === YT.PlayerState.ENDED) {
-              var next = (currentIndex + 1) % PLAYLIST.length;
-              playById(next);
-            }
-          },
+          onStateChange: onPlayerStateChange,
           onError: function(e) {
             var msgs = { 2:'재생목록 형식 오류', 5:'플레이어 오류', 100:'찾을 수 없는 영상', 101:'임베드 제한', 150:'임베드 제한' };
             titleEl.textContent = '주파수가 흐트러졌어요';
@@ -405,29 +389,6 @@
           }
         }
       });
-    }
-
-    function nextTrack() {
-      if (!player) return;
-      var next;
-      if (isShuffle) {
-        do { next = Math.floor(Math.random() * PLAYLIST.length); }
-        while (next === currentIndex && PLAYLIST.length > 1);
-      } else {
-        next = (currentIndex + 1) % PLAYLIST.length;
-      }
-      playById(next);
-    }
-
-    function prevTrack() {
-      if (!player) return;
-      var prev = (currentIndex - 1 + PLAYLIST.length) % PLAYLIST.length;
-      playById(prev);
-    }
-
-    function toggleShuffle() {
-      isShuffle = !isShuffle;
-      shuffleBtn.style.opacity = isShuffle ? '1' : '0.4';
     }
 
     // Load YouTube API
@@ -441,8 +402,9 @@
     prevBtn.addEventListener('click', prevTrack);
     nextBtn.addEventListener('click', nextTrack);
     shuffleBtn.addEventListener('click', toggleShuffle);
-    listToggle.addEventListener('click', toggleTracklist);
     shuffleBtn.style.opacity = '0.4';
+    listToggle.style.display = 'none';
+    tracklistEl.style.display = 'none';
 
     // Stars
     (function(){
