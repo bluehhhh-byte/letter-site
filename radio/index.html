@@ -298,6 +298,7 @@
     var isShuffle = true;
     var hasUnmuted = false;
     var commentIdx = Math.floor(Math.random() * COMMENTS.length);
+    var initialRandomIdx = Math.floor(Math.random() * 200);
 
     var titleEl = document.getElementById('rdTitle');
     var artistEl = document.getElementById('rdArtist');
@@ -366,7 +367,11 @@
     function handleFirstTap() {
       if (hasUnmuted || !player) return;
       hasUnmuted = true;
-      player.playVideo();
+      if (isShuffle && IS_PLAYLIST) {
+        player.playVideoAt(initialRandomIdx);
+      } else {
+        player.playVideo();
+      }
       document.getElementById('rdMuteHint').style.display = 'none';
       document.removeEventListener('click', handleFirstTap);
       document.removeEventListener('touchstart', handleFirstTap);
@@ -408,7 +413,7 @@
         events: {
           onReady: function() {
             if (IS_PLAYLIST) {
-              player.cuePlaylist({ list: PLAY_LIST_ID, listType: 'playlist', index: Math.floor(Math.random() * 200) });
+              player.cuePlaylist({ list: PLAY_LIST_ID, listType: 'playlist' });
             } else {
               player.cueVideoById(PLAY_LIST_ID);
             }
