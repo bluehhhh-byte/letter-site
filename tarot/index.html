@@ -288,8 +288,7 @@
 
       <div class="result-actions">
         <button class="result-btn" id="resultCloseBtn">다시 선택하기</button>
-        <button class="result-btn" id="resultCopyBtn">📋 프롬프트 복사</button>
-        <button class="result-btn" id="resultGeminiBtn">✨ Google AI 모드로 물어보기</button>
+        <button class="result-btn" id="resultCopyBtn">📋 텍스트 복사</button>
         <button class="result-btn primary" id="resultRedrawBtn">새로 뽑기</button>
       </div>
     </div>
@@ -421,26 +420,19 @@
     resultCloseBtn.addEventListener('click',autoDraw);
     resultRedrawBtn.addEventListener('click',()=>{ shuffleGrid(); resetSelection(); window.scrollTo({top:0,behavior:'smooth'}); });
     document.getElementById('resultCopyBtn').addEventListener('click', copyResultText);
-    document.getElementById('resultGeminiBtn').addEventListener('click', askGemini);
 
     function buildPromptText() {
       if (!_lastCardData) return '';
       const hasQ = _lastQuestion && _lastQuestion !== '질문없음';
       let text = hasQ ? `질문: ${_lastQuestion}\n\n` : '';
-      text += `타로 리딩을 부탁합니다. 아래 ${_lastCardData.length}장의 카드 스프레드를 바탕으로 깊이 있는 종합 해석을 해주세요.\n\n`;
+      text += `[타로 리딩 결과] ${_lastReading?.title || ''}\n\n`;
+      text += `리뷰: ${_lastReading?.text || ''}\n\n`;
       _lastCardData.forEach((d,i)=>{
         const c=d.card;
-        text += `【${d.posName}】\n`;
-        text += `카드: ${c.name} (${c.nameEn})\n`;
-        text += `방향: ${d.reversed ? '역방향' : '정방향'}\n`;
-        text += `타입: ${c.suit ? `${c.suitName} (${c.element})` : '메이저 아르카나'}\n`;
+        text += `【${d.posName}】 ${c.name} (${c.nameEn}) · ${d.reversed ? '역방향' : '정방향'}\n`;
         text += `키워드: ${c.keywords || '-'}\n`;
-        text += `의미: ${getMeaning(c,d.reversed)}\n\n`;
+        text += `${d.reversed ? c.reversed : c.upright}\n\n`;
       });
-      text += '---\n';
-      text += '각 카드의 위치별 의미와 카드들 간의 연결성을 분석해주세요. ';
-      text += '메이저/마이너 비율, 정역방향의 흐름, 원소의 분포를 종합하여 ';
-      text += '따뜻하고 통찰력 있는 문장으로 해석해주세요.';
       return text;
     }
 
@@ -450,23 +442,12 @@
       navigator.clipboard.writeText(text).then(()=>{
         const btn=document.getElementById('resultCopyBtn');
         btn.textContent='✅ 복사됨';
-        setTimeout(()=>{ btn.textContent='📋 프롬프트 복사'; },2000);
+        setTimeout(()=>{ btn.textContent='📋 텍스트 복사'; },2000);
       }).catch(()=>{
         const btn=document.getElementById('resultCopyBtn');
         btn.textContent='❌ 복사 실패';
-        setTimeout(()=>{ btn.textContent='📋 프롬프트 복사'; },2000);
+        setTimeout(()=>{ btn.textContent='📋 텍스트 복사'; },2000);
       });
-    }
-
-    function askGemini() {
-      const text = buildPromptText();
-      if (!text) return;
-      navigator.clipboard.writeText(text).then(()=>{
-        const btn=document.getElementById('resultGeminiBtn');
-        btn.textContent='✅ 복사+이동';
-        setTimeout(()=>{ btn.textContent='✨ Google AI 모드로 물어보기'; },2000);
-      }).catch(()=>{});
-      window.open('https://www.google.com/search?q=' + encodeURIComponent(text) + '&udm=14&hl=ko', '_blank');
     }
 
     function shuffleGrid(){
@@ -492,13 +473,19 @@
       return reversed?card.reversed:card.upright;
     }
 
-    function generateFallbackReading(cards) {
+    function generateReading(cards) {
       const revCount=cards.filter(c=>c.reversed).length;
       const majorCount=cards.filter(c=>c.card.type==='major').length;
       const suits=[...new Set(cards.map(c=>c.card.suit).filter(Boolean))];
       const elements=suits.map(s=>TAROT_SUITS[s]?.element).filter(Boolean);
       const elemCount={}; elements.forEach(e=>{ elemCount[e]=(elemCount[e]||0)+1; });
       const revRatio = revCount / cards.length;
+
+      // 키워드 조합 요약
+      const allKeywords = cards.map(c => c.card.keywords || '').filter(Boolean);
+      const keywordSummary = allKeywords.length > 0
+        ? allKeywords.join(' · ')
+        : cards.map(c => c.reversed ? c.card.name + '(역)' : c.card.name).join(', ');
 
       const title = majorCount >= cards.length/2 ? '강한 운명의 흐름'
         : revRatio >= 0.6 ? '내면의 성찰이 필요한 때'
@@ -507,6 +494,10 @@
 
       let parts = [];
       parts.push(`당신을 위해 ${cards.length}장의 카드가 펼쳐졌습니다.`);
+
+      // 키워드 기반 한줄 리뷰
+      parts.push(`뽑은 카드의 키워드: ${keywordSummary}`);
+      parts.push(`이 키워드들이 오늘의 당신 상황과 어떻게 연결되는지 생각해보세요.`);
 
       // Overall energy
       if (majorCount >= cards.length/2) parts.push(`메이저 아르카나가 ${majorCount}장으로 매우 강하게 나타났습니다. 이는 우주가 당신에게 큰 메시지를 보내고 있음을 의미합니다. 인생의 중요한 전환점에 서 있을 가능성이 큽니다.`);
@@ -549,36 +540,9 @@
       return {title, text: parts.join(' '), detail};
     }
 
-    async function callServerReading(cardData, question) {
-      const apiCards = cardData.map(d => ({
-        name: d.card.name, nameEn: d.card.nameEn,
-        reversed: d.reversed,
-        meaning: d.reversed ? d.card.reversed : d.card.upright,
-        posName: d.posName,
-        suitName: d.card.suitName || '',
-        element: d.card.element || '',
-        type: d.card.type,
-        keywords: d.card.keywords || ''
-      }));
+    async function callServerReading(cardData, question) {}
 
-      const res = await fetch('/api/reading', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cards: apiCards, question })
-      });
-
-      if (!res.ok) throw new Error(`API 오류 (${res.status})`);
-      const data = await res.json();
-      if (!data.title) throw new Error('응답 형식이 올바르지 않습니다.');
-      return data;
-    }
-
-    function setLoading(show) {
-      crLoading.classList.toggle('active', show);
-      crTitle.style.display = show ? 'none' : '';
-      crText.style.display = show ? 'none' : '';
-      crDetail.style.display = show ? 'none' : '';
-    }
+    function setLoading(show) {}
 
     function setError(msg) {
       crError.textContent = msg;
@@ -611,7 +575,7 @@
       });
     }
 
-    async function revealCards() {
+    function revealCards() {
       if (selected.length !== currentSpread.cnt) return;
 
       const question = qInput.value.trim() || '질문없음';
@@ -621,40 +585,25 @@
         return { card, reversed: s.reversed, position: i, posName: currentSpread.positions[i], posDesc: currentSpread.descs[i] };
       });
 
-      // Show overlay immediately with loading
+      // 키워드 조합 리뷰 생성
+      const reading = generateReading(cardData);
+
       resultQuestion.textContent = question;
       document.getElementById('resultSpreadLabel').textContent = currentSpread.label + ' · ' + currentSpread.name;
       resultCards.innerHTML = '';
-      crTitle.textContent = '';
-      crText.textContent = '';
-      crDetail.textContent = '';
       crError.classList.remove('active');
-      setLoading(true);
+
+      crTitle.textContent = reading.title;
+      crText.textContent = reading.text;
+      crDetail.innerHTML = reading.detail;
+      buildCardHtml(cardData);
+      _lastCardData = cardData;
+      _lastReading = reading;
+      _lastQuestion = question;
+
+      // Show overlay
       resultOverlay.classList.add('open');
       document.body.style.overflow = 'hidden';
-
-      try {
-        const reading = await callServerReading(cardData, question);
-        setLoading(false);
-        crTitle.textContent = reading.title;
-        crText.textContent = reading.text;
-        crDetail.innerHTML = reading.detail;
-        buildCardHtml(cardData);
-        _lastCardData = cardData;
-        _lastReading = reading;
-        _lastQuestion = question;
-      } catch (e) {
-        console.error('Reading failed, using fallback:', e);
-        setLoading(false);
-        const reading = generateFallbackReading(cardData);
-        crTitle.textContent = reading.title;
-        crText.textContent = reading.text;
-        crDetail.innerHTML = reading.detail;
-        buildCardHtml(cardData);
-        _lastCardData = cardData;
-        _lastReading = reading;
-        _lastQuestion = question;
-      }
     }
 
     function resetSelection(){
