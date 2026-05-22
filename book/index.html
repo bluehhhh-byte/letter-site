@@ -293,24 +293,33 @@
     var currentGenre = '전체';
 
     var PONGPONG_BOOKS = [
-      { title:'고양이를 버리다 · 아버지에 대해 이야기할 때', author:'무라카미 하루키', nationality:'일본', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'무라카미 하루키가 아버지에 대해 이야기하는 자전적 에세이.', isChoice:false },
-      { title:'끝까지 남겨두는 그 마음', author:'정도언', nationality:'한국', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'삶과 사랑에 대한 깊은 울림을 주는 이야기.', isChoice:false },
-      { title:'거울나라의 앨리스', author:'루이스 캐럴', nationality:'영국', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'거울 너머的世界로 떠나는 앨리스의 두 번째 모험.', isChoice:false },
-      { title:'데미안', author:'헤르만 헤세', nationality:'독일', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'자아를 찾아가는 싱클레어의 성장 이야기.', isChoice:false },
-      { title:'독일인의 사랑', author:'맥스 뮐러', nationality:'독일', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'순수한 사랑과 희생을 그린 감동적인 명작.', isChoice:false },
-      { title:'빨강 머리 앤', author:'루시 모드 몽고메리', nationality:'캐나다', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'상상력이 풍부한 빨강 머리 소녀 앤의 성장 이야기.', isChoice:false },
-      { title:'사슴', author:'백석', nationality:'한국', genre:'시', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'백석의 대표 시. 북방의 정서가 깃든 서정시.', isChoice:false },
-      { title:'야간 비행', author:'앙투안 드 생텍쥐페리', nationality:'프랑스', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'밤하늘을 나는 비행사의 용기와 사명을 그린 이야기.', isChoice:false },
-      { title:'어린 왕자', author:'앙투안 드 생텍쥐페리', nationality:'프랑스', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'가장 순수한 시선으로 바라본 삶과 사랑의 의미.', isChoice:false },
-      { title:'오만과 편견', author:'제인 오스틴', nationality:'영국', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'편견을 넘어 진정한 사랑을 찾아가는 로맨스의 고전.', isChoice:false },
-      { title:'오셀로', author:'윌리엄 셰익스피어', nationality:'영국', genre:'희곡', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'질투와 의심이 빚어낸 비극적 사랑 이야기.', isChoice:false },
-      { title:'오즈의 마법사', author:'라이먼 프랭크 바움', nationality:'미국', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'용기와 지혜를 찾아 오즈로 떠나는 모험.', isChoice:false },
-      { title:'이상한 나라의 앨리스', author:'루이스 캐럴', nationality:'영국', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'토끼굴로 떠난 앨리스의 기묘하고 환상적인 모험.', isChoice:false },
-      { title:'자기만의 방', author:'버지니아 울프', nationality:'영국', genre:'에세이', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'여성이 글을 쓰기 위해 필요한 조건에 대한 에세이.', isChoice:false },
-      { title:'청춘은 아름다워', author:'헤르만 헤세', nationality:'독일', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'청춘의 방황과 성장을 그린 헤세의 아름다운 이야기.', isChoice:false },
-      { title:'키다리 아저씨', author:'진 웹스터', nationality:'미국', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'고아 소녀 주디가 익명의 후원자에게 보내는 편지 형식의 성장 소설.', isChoice:false },
-      { title:'탈무드', author:'유대인 현자들', nationality:'유대', genre:'인문', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'유대인들의 지혜와 교훈이 담긴 고전.', isChoice:false }
+      { title:'고양이를 버리다 · 아버지에 대해 이야기할 때', author:'무라카미 하루키', search:'고양이를 버리다 무라카미 하루키', nationality:'일본', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'무라카미 하루키가 아버지에 대해 이야기하는 자전적 에세이.', isChoice:false },
+      { title:'끝까지 남겨두는 그 마음', author:'정도언', search:'끝까지 남겨두는 그 마음 정도언', nationality:'한국', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'삶과 사랑에 대한 깊은 울림을 주는 이야기.', isChoice:false },
+      { title:'거울나라의 앨리스', author:'루이스 캐럴', search:'거울나라의 앨리스 루이스 캐럴', nationality:'영국', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'거울 너머 세계로 떠나는 앨리스의 두 번째 모험.', isChoice:false },
+      { title:'데미안', author:'헤르만 헤세', search:'데미안 헤르만 헤세', nationality:'독일', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'자아를 찾아가는 싱클레어의 성장 이야기.', isChoice:false },
+      { title:'독일인의 사랑', author:'맥스 뮐러', search:'독일인의 사랑 맥스 뮐러', nationality:'독일', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'순수한 사랑과 희생을 그린 감동적인 명작.', isChoice:false },
+      { title:'빨강 머리 앤', author:'루시 모드 몽고메리', search:'빨강 머리 앤 루시 모드 몽고메리', nationality:'캐나다', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'상상력이 풍부한 빨강 머리 소녀 앤의 성장 이야기.', isChoice:false },
+      { title:'사슴', author:'백석', search:'사슴 백석', nationality:'한국', genre:'시', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'백석의 대표 시. 북방의 정서가 깃든 서정시.', isChoice:false },
+      { title:'야간 비행', author:'앙투안 드 생텍쥐페리', search:'야간 비행 생텍쥐페리', nationality:'프랑스', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'밤하늘을 나는 비행사의 용기와 사명을 그린 이야기.', isChoice:false },
+      { title:'어린 왕자', author:'앙투안 드 생텍쥐페리', search:'어린 왕자 생텍쥐페리', nationality:'프랑스', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'가장 순수한 시선으로 바라본 삶과 사랑의 의미.', isChoice:false },
+      { title:'오만과 편견', author:'제인 오스틴', search:'오만과 편견 제인 오스틴', nationality:'영국', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'편견을 넘어 진정한 사랑을 찾아가는 로맨스의 고전.', isChoice:false },
+      { title:'오셀로', author:'윌리엄 셰익스피어', search:'오셀로 셰익스피어', nationality:'영국', genre:'희곡', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'질투와 의심이 빚어낸 비극적 사랑 이야기.', isChoice:false },
+      { title:'오즈의 마법사', author:'라이먼 프랭크 바움', search:'오즈의 마법사 라이먼 프랭크 바움', nationality:'미국', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'용기와 지혜를 찾아 오즈로 떠나는 모험.', isChoice:false },
+      { title:'이상한 나라의 앨리스', author:'루이스 캐럴', search:'이상한 나라의 앨리스 루이스 캐럴', nationality:'영국', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'토끼굴로 떠난 앨리스의 기묘하고 환상적인 모험.', isChoice:false },
+      { title:'자기만의 방', author:'버지니아 울프', search:'자기만의 방 버지니아 울프', nationality:'영국', genre:'에세이', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'여성이 글을 쓰기 위해 필요한 조건에 대한 에세이.', isChoice:false },
+      { title:'청춘은 아름다워', author:'헤르만 헤세', search:'청춘은 아름다워 헤르만 헤세', nationality:'독일', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'청춘의 방황과 성장을 그린 헤세의 아름다운 이야기.', isChoice:false },
+      { title:'키다리 아저씨', author:'진 웹스터', search:'키다리 아저씨 진 웹스터', nationality:'미국', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'고아 소녀 주디가 익명의 후원자에게 보내는 편지 형식의 성장 소설.', isChoice:false },
+      { title:'탈무드', author:'유대인 현자들', search:'탈무드', nationality:'유대', genre:'인문', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'유대인들의 지혜와 교훈이 담긴 고전.', isChoice:false }
     ];
+
+    function aladinUrl(book) {
+      return 'https://www.aladin.co.kr/search/wsearchresult.aspx?SearchTarget=Book&SearchWord=' + encodeURIComponent(book.search);
+    }
+
+    function googleAiUrl(book) {
+      var q = book.title + ' ' + book.author + ' 설명해줘';
+      return 'https://www.google.com/search?q=' + encodeURIComponent(q) + '&udm=50';
+    }
 
     function renderGenreFilter() {
       var genreSet = {};
@@ -346,7 +355,12 @@
       var btns = document.querySelectorAll('.bk-genre-btn');
       btns.forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-genre') === genre); });
       if (genre === '퐁퐁추천') {
-        allBooks = PONGPONG_BOOKS.map(function(b, i) { b.rank = i + 1; return b; });
+        allBooks = PONGPONG_BOOKS.map(function(b) {
+          var book = JSON.parse(JSON.stringify(b));
+          book.detailUrl = googleAiUrl(book);
+          return book;
+        });
+        shuffleArray(allBooks);
         body.insertAdjacentHTML('beforeend',
           '<div class="bk-narrative"><em>퐁퐁추천</em> · 내면을 채우는 영혼의 문장들</div>');
         renderGrid();

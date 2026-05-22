@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#07070d" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>그리움이 닿는 곳 — 365일의 시</title>
+  <title>그리움이 닿는 곳 — 오라클</title>
   <link rel="stylesheet" href="../styles.css" />
   <style>
     * { -webkit-tap-highlight-color: transparent; }
@@ -47,7 +47,7 @@
     <a href="../radio/index.html" class="mode-btn">라디오</a>
   </nav>
 
-  <div class="footer">365일의 시 <span>·</span> 그리움이 닿는 곳</div>
+  <div class="footer">오라클 <span>·</span> 그리움이 닿는 곳</div>
 
   <script src="poems.js"></script>
   <script>
@@ -87,13 +87,24 @@
       return { index: idx + 1, text: POEMS[idx] };
     }
 
+    var CATEGORIES = [
+      { label:'긍정', emoji:'🔵', start:1, end:122 },
+      { label:'중립', emoji:'🟡', start:123, end:243 },
+      { label:'부정', emoji:'🔴', start:244, end:365 }
+    ];
+
+    function getCategory(index) {
+      for (var i = 0; i < CATEGORIES.length; i++) {
+        if (index >= CATEGORIES[i].start && index <= CATEGORIES[i].end) return CATEGORIES[i];
+      }
+      return CATEGORIES[0];
+    }
+
     function showMessage() {
       const poem = getRandomPoem();
-      const lines = poem.text.split('\n');
-      msgNum.textContent = 'MESSAGE #' + String(poem.index).padStart(3, '0') + ' / ' + POEMS.length;
-      msgText.innerHTML = lines.map((l, i) =>
-        '<span class="line" style="animation-delay:' + (i * 0.08) + 's">' + l + '</span>'
-      ).join('');
+      const cat = getCategory(poem.index);
+      msgNum.textContent = cat.emoji + ' ' + cat.label + ' · ' + String(poem.index) + ' / ' + POEMS.length;
+      msgText.innerHTML = '<span class="line">' + poem.text + '</span>';
       overlay.classList.add('open');
       document.body.style.overflow = 'hidden';
     }
