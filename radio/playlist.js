@@ -1,0 +1,18 @@
+var PLAYLIST = [
+  { id:'pNRSXxI4fdM', title:'흔들리는 꽃들 속에서 네 샴푸향이 느껴진거야', artist:'장범준',
+    comment:'봄바람 같은 사람아, 네가 없는 계절도 결국 지나간다' },
+  { id:'dWZs4hOtJ4I', title:'밤편지', artist:'아이유 (IU)',
+    comment:'잠들지 못하는 밤, 이 노래가 너의 창가에 닿기를' },
+  { id:'Fwe3Qqq2jxs', title:'나만, 봄', artist:'볼빨간사춘기',
+    comment:'혼자라고 느껴질 때도, 누군가는 너를 기다리고 있어' },
+  { id:'yCH_dCcIpkY', title:'모든 날, 모든 순간 (Every day, Every Moment)', artist:'폴킴 (Paul Kim)',
+    comment:'네가 곁에 없어도, 모든 순간은 너로 기억될 거야' },
+  { id:'oZm2uRuJhXg', title:'너의 모든 순간', artist:'성시경',
+    comment:'너의 미소 한 조각이, 내 하루를 환하게 만든다' },
+  { id:'M6NxJ9hRJCg', title:'폰서트 (Phonecert)', artist:'10cm',
+    comment:'멀리 떨어져 있어도, 같은 음악을 듣고 있다는 것만으로도' },
+  { id:'u0XfoXOMhD4', title:'우산', artist:'윤하 (Younha)',
+    comment:'비 오는 날, 생각나는 사람이 있다면 그것만으로도 특별한 거야' },
+  { id:'J7RlR2BYmzI', title:'어떻게 이별까지 사랑하겠어, 널 사랑하는 거지', artist:'악동뮤지션 (AKMU)',
+    comment:'사랑한다는 말보다 더 따뜻한 말은, 함께 있을게' }
+];
