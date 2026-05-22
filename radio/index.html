@@ -266,7 +266,7 @@
       <button class="rd-btn" id="rdNext" title="다음 곡">⏭</button>
       <button class="rd-btn rd-btn-shuffle" id="rdShuffle" title="셔플">🔀</button>
     </div>
-    <div class="rd-mute-hint" id="rdMuteHint">화면을 터치하면 음악이 들려요</div>
+    <div class="rd-mute-hint" id="rdMuteHint">화면을 터치하면 재생됩니다</div>
 
     <!-- Track list toggle -->
     <button class="rd-list-toggle" id="rdListToggle">전체 재생목록</button>
@@ -355,17 +355,17 @@
       else { player.playVideo(); }
     }
 
+    document.addEventListener('click', handleFirstTap);
+    document.addEventListener('touchstart', handleFirstTap);
+
     function handleFirstTap() {
       if (hasUnmuted || !player) return;
       hasUnmuted = true;
-      player.unMute();
       player.playVideo();
       document.getElementById('rdMuteHint').style.display = 'none';
       document.removeEventListener('click', handleFirstTap);
       document.removeEventListener('touchstart', handleFirstTap);
     }
-    document.addEventListener('click', handleFirstTap);
-    document.addEventListener('touchstart', handleFirstTap);
 
     function nextTrack() {
       if (!player) return;
@@ -392,13 +392,11 @@
           modestbranding: 1,
           rel: 0,
           controls: 0,
-          fs: 0,
-          autoplay: 1,
-          mute: 1
+          fs: 0
         },
         events: {
           onReady: function() {
-            player.loadPlaylist({ list: PLAY_LIST_ID, listType: 'playlist', index: 0 });
+            player.cuePlaylist({ list: PLAY_LIST_ID, listType: 'playlist', index: 0 });
           },
           onStateChange: onPlayerStateChange,
           onError: function(e) {
