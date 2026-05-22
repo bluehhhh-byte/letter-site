@@ -66,17 +66,17 @@
 
     .tarot-card {
       aspect-ratio:5/7; border-radius:6px; cursor:pointer; position:relative;
-      transition:all .3s ease; border:1.5px solid var(--border);
+      transition:all .25s cubic-bezier(.34,1.56,.64,1); border:1.5px solid var(--border);
       background:linear-gradient(145deg,#1a1a2e,#12121a); overflow:hidden; user-select:none;
-      touch-action:manipulation;
+      touch-action:manipulation; -webkit-tap-highlight-color:transparent;
     }
     .tarot-card::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(45deg,transparent,transparent 8px,rgba(201,169,110,0.03) 8px,rgba(201,169,110,0.03) 16px); }
     .tarot-card .card-pattern { position:absolute; inset:4px; border:1px solid rgba(201,169,110,0.08); border-radius:4px; display:flex; align-items:center; justify-content:center; }
     .tarot-card .card-pattern-inner { width:60%; height:60%; border:1px solid rgba(201,169,110,0.12); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.6rem; color:rgba(201,169,110,0.15); }
-    .tarot-card.selected { border-color:var(--gold); box-shadow:0 0 20px rgba(201,169,110,0.3),inset 0 0 20px rgba(201,169,110,0.05); transform:translateY(-6px); }
+    .tarot-card.selected { border-color:var(--gold); box-shadow:0 0 24px rgba(201,169,110,0.4),inset 0 0 24px rgba(201,169,110,0.08); transform:translateY(-6px); }
     @media (hover:hover) { .tarot-card:hover { border-color:rgba(201,169,110,0.4); transform:translateY(-4px); box-shadow:0 8px 24px rgba(0,0,0,0.3); } }
-    .tarot-card:active { transform:scale(0.96); }
-    .tarot-card.selected:active { transform:translateY(-4px) scale(0.96); }
+    .tarot-card:active { transform:scale(0.95); }
+    .tarot-card.selected:active { transform:translateY(-4px) scale(0.97); }
     .tarot-card.selected::after { content:''; position:absolute; inset:-2px; border:2px solid var(--gold); border-radius:8px; pointer-events:none; }
     .tarot-card .sel-num { position:absolute; top:4px; right:4px; width:20px; height:20px; border-radius:50%; background:var(--gold); color:var(--bg); font-family:var(--font-sans); font-size:.65rem; display:none; align-items:center; justify-content:center; font-weight:600; z-index:2; }
     .tarot-card.selected .sel-num { display:flex; }
@@ -114,8 +114,8 @@
     }
     .combined-reading .cr-label { font-family:var(--font-sans); font-size:.6rem; letter-spacing:.15em; color:var(--gold-dim); margin-bottom:.4rem; }
     .combined-reading .cr-title { font-family:var(--font-serif); font-size:1rem; font-weight:400; color:var(--gold); margin-bottom:.5rem; }
-    .combined-reading .cr-text { font-family:var(--font-serif); font-size:.85rem; line-height:1.7; color:var(--text); font-weight:300; white-space:pre-line; }
-    .combined-reading .cr-detail { margin-top:.6rem; padding-top:.6rem; border-top:1px solid var(--border); font-family:var(--font-sans); font-size:.7rem; color:var(--text-dim); line-height:1.6; }
+    .combined-reading .cr-text { font-family:var(--font-serif); font-size:.85rem; line-height:1.9; color:var(--text); font-weight:300; white-space:pre-line; }
+    .combined-reading .cr-detail { margin-top:.6rem; padding-top:.6rem; border-top:1px solid var(--border); font-family:var(--font-sans); font-size:.7rem; color:var(--text-dim); line-height:1.8; }
     .combined-reading .cr-detail span { color:var(--gold); }
 
     @media (min-width:600px) {
@@ -148,7 +148,7 @@
     .orient-upright-badge { background:rgba(201,169,110,0.15); color:var(--gold); }
     .orient-reversed-badge { background:rgba(180,100,120,0.15); color:#d490a0; }
     .result-card .rc-type { font-family:var(--font-sans); font-size:.55rem; color:var(--text-muted); letter-spacing:.08em; padding-bottom:.4rem; border-bottom:1px solid var(--border); margin-bottom:.5rem; }
-    .result-card .rc-meaning { font-family:var(--font-serif); font-size:.8rem; line-height:1.6; color:var(--text); font-weight:300; }
+    .result-card .rc-meaning { font-family:var(--font-serif); font-size:.8rem; line-height:1.85; color:var(--text); font-weight:300; }
     .result-card .rc-pos-desc { font-family:var(--font-sans); font-size:.6rem; color:var(--text-muted); margin-top:.4rem; font-style:italic; }
 
     .result-actions { text-align:center; padding:.5rem 0 9rem; display:flex; gap:.4rem; justify-content:center; flex-wrap:wrap; }
@@ -188,21 +188,23 @@
       .tarot-header h1 { font-size:.8rem; }
       .tarot-header .back-link { font-size:.65rem; }
       .tarot-header .step-indicator { font-size:.6rem; }
-      .tarot-body { padding:3.8rem .4rem 7rem; }
-      .tarot-grid { grid-template-columns:repeat(auto-fill,minmax(48px,1fr)); gap:.25rem; }
-      .tarot-card { border-radius:3px; border-width:1px; }
-      .tarot-card .card-pattern { inset:1.5px; }
-      .tarot-card .card-pattern-inner { width:45%; height:45%; font-size:.4rem; }
-      .tarot-card .sel-num { width:14px; height:14px; font-size:.5rem; top:1.5px; right:1.5px; }
-      .tarot-card .orient-badge { font-size:.35rem; padding:1px 3px; bottom:2px; }
-      .tarot-card.selected { transform:translateY(-3px); }
+      .tarot-body { padding:3.8rem .6rem 7rem; }
+      .tarot-grid { grid-template-columns:repeat(3,1fr); gap:1rem; }
+      .tarot-card { border-radius:4px; border-width:1.5px; }
+      .tarot-card .card-pattern { inset:2px; }
+      .tarot-card .card-pattern-inner { width:50%; height:50%; font-size:.5rem; }
+      .tarot-card .sel-num { width:20px; height:20px; font-size:.65rem; top:3px; right:3px; }
+      .tarot-card .orient-badge { font-size:.4rem; padding:1px 5px; bottom:3px; }
+      .tarot-card.selected { transform:translateY(-4px) scale(1.04); }
+      .tarot-card:active { transform:scale(0.94); }
       .question-area { margin:.4rem auto .8rem; }
       .question-input { padding:.7rem .9rem; font-size:.8rem; }
       .tarot-prompt { font-size:.75rem; margin:0 0 .8rem; }
       .spread-btn { padding:.4rem .7rem; font-size:.6rem; }
       .spread-btn .cnt { font-size:.75rem; }
       .reveal-btn { padding:.65rem 1.8rem; font-size:.65rem; }
-      .result-overlay { padding:.6rem; }
+      .result-overlay { padding:.6rem; display:block; overflow-y:auto; }
+      .result-overlay.open { display:block; }
       .result-container { padding-top:.3rem; }
       .result-header { margin-bottom:1rem; }
       .result-header h2 { font-size:1rem; }
@@ -225,8 +227,8 @@
       .cr-error { font-size:.7rem; padding:.8rem; }
     }
     @media (max-width:374px) {
-      .tarot-grid { grid-template-columns:repeat(auto-fill,minmax(42px,1fr)); gap:.2rem; }
-      .tarot-body { padding:3.5rem .3rem 7rem; }
+      .tarot-grid { grid-template-columns:repeat(3,1fr); gap:.8rem; }
+      .tarot-body { padding:3.5rem .4rem 7rem; }
       .tarot-header { padding:.4rem .5rem; }
       .tarot-header h1 { font-size:.7rem; }
       .result-overlay { padding:.4rem; }
@@ -347,7 +349,7 @@
 
     // ─── Spreads ──────────────────────────────────────────────────────────
     const SPREADS = {
-      '1': { name:'원카드 스프레드', label:'1-Card', cnt:1, header:'원카드 스프레드 · 집중 조언', summary:'한 장의 카드로 지금 당신에게 가장 필요한 메시지를 얻습니다. 빠른 인사이트와 오늘의 조언에 좋습니다.', positions:['오늘의 메시지'], descs:['이 카드는 지금 당신에게 가장 필요한 에너지를 나타냅니다.'] },
+      '1': { name:'원카드 스프레드', label:'1-Card', cnt:1, header:'원카드 스프레드 · 집중 조언', summary:'한 장의 카드로 지금 당신에게 가장 필요한 메시지를 얻습니다.', positions:['오늘의 메시지'], descs:['이 카드는 지금 당신에게 가장 필요한 에너지를 나타냅니다.'] },
       '3': { name:'삼장 스프레드', label:'3-Card', cnt:3, header:'삼장 스프레드 · 과거/현재/미래', summary:'과거의 영향, 현재의 상황, 미래의 조언을 시간의 흐름에 따라 조망합니다.', positions:['과거의 근원','현재의 상황','미래의 조언'], descs:['이 카드는 현재 상황의 뿌리를 나타냅니다. 과거의 경험과 선택이 지금에 영향을 주고 있습니다.','이 카드는 지금 당신이 서 있는 자리를 나타냅니다. 현재의 에너지와 도전을 보여줍니다.','이 카드는 앞으로의 방향을 제시합니다. 당신이 취할 수 있는 조언과 잠재적 결과입니다.'] },
       '5': { name:'오장 스프레드', label:'5-Card', cnt:5, header:'오장 스프레드 · 다섯 가지 시선', summary:'현재에서 미래까지, 도전과 잠재력을 포함한 폭넓은 시야를 제공합니다.', positions:['현재의 상황','당면한 도전','과거의 영향','다가올 미래','잠재적 결과'], descs:['당신이 지금 서 있는 위치와 현재의 에너지입니다.','당신이 극복해야 할 장애물이나 배워야 할 교훈입니다.','과거의 경험이 현재에 미치는 영향입니다.','곧 다가올 사건이나 만날 기회입니다.','현재의 흐름이 이끄는 최종 결과입니다.'] },
       '7': { name:'칠장 스프레드', label:'7-Card', cnt:7, header:'칠장 스프레드 · 일곱 가지 통찰', summary:'내면과 환경을 포함해 삶의 여러 차원을 종합적으로 탐색합니다.', positions:['현재의 중심','당면한 도전','과거의 영향','다가올 미래','자신의 내면','환경과 타인','최종 결과'], descs:['지금 당신의 삶의 중심에 있는 에너지입니다.','당신이 직면한 주요 도전과제입니다.','과거의 경험이 현재에 미치는 영향입니다.','곧 펼쳐질 가능성과 기회입니다.','당신의 내면 상태와 숨은 잠재력입니다.','주변 환경과 사람들의 영향입니다.','현재 흐름의 궁극적 결과입니다.'] },
