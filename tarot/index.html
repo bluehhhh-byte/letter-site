@@ -305,7 +305,7 @@
 
       <div class="result-actions">
         <button class="result-btn" id="resultCloseBtn">다시 선택하기</button>
-        <button class="result-btn" id="resultCopyBtn">📋 텍스트 복사</button>
+        <button class="result-btn primary" id="resultAIBtn">🤖 AI 해석</button>
         <button class="result-btn primary" id="resultRedrawBtn">새로 뽑기</button>
       </div>
     </div>
@@ -436,7 +436,7 @@
     revealBtn.addEventListener('click',revealCards);
     resultCloseBtn.addEventListener('click',autoDraw);
     resultRedrawBtn.addEventListener('click',()=>{ shuffleGrid(); resetSelection(); window.scrollTo({top:0,behavior:'smooth'}); });
-    document.getElementById('resultCopyBtn').addEventListener('click', copyResultText);
+    document.getElementById('resultAIBtn').addEventListener('click', openAIInterpretation);
 
     function buildPromptText() {
       if (!_lastCardData) return '';
@@ -453,18 +453,19 @@
       return text;
     }
 
-    function copyResultText() {
+    function openAIInterpretation() {
       const text = buildPromptText();
       if (!text) return;
       navigator.clipboard.writeText(text).then(()=>{
-        const btn=document.getElementById('resultCopyBtn');
-        btn.textContent='✅ 복사됨';
-        setTimeout(()=>{ btn.textContent='📋 텍스트 복사'; },2000);
+        const btn=document.getElementById('resultAIBtn');
+        btn.textContent='✅ 복사+이동';
+        setTimeout(()=>{ btn.textContent='🤖 AI 해석'; },2000);
       }).catch(()=>{
-        const btn=document.getElementById('resultCopyBtn');
-        btn.textContent='❌ 복사 실패';
-        setTimeout(()=>{ btn.textContent='📋 텍스트 복사'; },2000);
+        const btn=document.getElementById('resultAIBtn');
+        btn.textContent='❌ 재시도';
+        setTimeout(()=>{ btn.textContent='🤖 AI 해석'; },2000);
       });
+      window.open('https://gemini.google.com','_blank');
     }
 
     function shuffleGrid(){
