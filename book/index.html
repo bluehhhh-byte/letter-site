@@ -291,6 +291,7 @@
 
     var allBooks = [];
     var currentGenre = '전체';
+    var _originalBooks = [];
 
     var PONGPONG_BOOKS = [
       { title:'고양이를 버리다 · 아버지에 대해 이야기할 때', author:'무라카미 하루키', search:'고양이를 버리다 무라카미 하루키', nationality:'일본', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'무라카미 하루키가 아버지에 대해 이야기하는 자전적 에세이.', isChoice:false },
@@ -365,6 +366,7 @@
           '<div class="bk-narrative"><em>퐁퐁추천</em> · 내면을 채우는 영혼의 문장들</div>');
         renderGrid();
       } else {
+        if (_originalBooks.length) allBooks = _originalBooks.slice();
         if (_savedNarrative) body.insertAdjacentHTML('beforeend', '<div class="bk-narrative">' + _savedNarrative + '</div>');
         renderGrid();
       }
@@ -412,6 +414,7 @@
         return;
       }
       allBooks = data.books.map(function(b, i) { b.rank = b.rank || (i + 1); return b; });
+      _originalBooks = allBooks.slice();
       currentGenre = '전체';
 
       body.insertAdjacentHTML('beforeend',
