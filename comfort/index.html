@@ -285,6 +285,7 @@
 
     const STORIES = [
       {
+        date: '2026년 5월 23일',
         paras: [
           `퐁퐁아, 내가 얼마 전에 진짜 마음이 몽글몽글해지는 글을 하나 읽었는데, 너랑 꼭 나누고 싶어서.`,
           `너 '펄 벅'이라는 미국 작가 알지? 소설 <대지>로 노벨 문학상까지 받았던 엄청 대단한 할머니 작가 있잖아. 그분이 1960년에 처음으로 한국에 왔었대.`,
@@ -304,6 +305,7 @@
         ]
       },
       {
+        date: '2026년 5월 23일',
         paras: [
           `1장: 지퍼, 지독한 외로움의 끝에서 피어난 집착`,
           `인류의 역사에는 수많은 위대한 발명이 있지만, 오늘날 우리 옷에 달린 지퍼만큼 한 남자의 지독한 사랑과 외로움이 촘촘히 새겨진 물건은 없을 것입니다.`,
@@ -362,6 +364,10 @@
         el.textContent = p;
         body.appendChild(el);
       });
+      var dateEl = document.createElement('p');
+      dateEl.style.cssText = 'margin-top:2rem;font-size:.7rem;color:var(--text-muted);text-align:center;letter-spacing:.1em;';
+      dateEl.textContent = story.date + ' 업데이트';
+      body.appendChild(dateEl);
       overlay.classList.add('open', 'story-mode');
       document.body.style.overflow = 'hidden';
       setTimeout(function() { overlay.scrollTop = 0; }, 10);
