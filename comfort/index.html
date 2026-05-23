@@ -48,6 +48,7 @@
       -webkit-backdrop-filter:blur(16px);
     }
     .rx-overlay.open { display:flex; }
+    .rx-overlay.story-mode { align-items:flex-start; padding:5rem 1.5rem; overflow-y:auto; }
     .rx-card {
       background:var(--bg-card); border:1px solid var(--border);
       max-width:480px; width:100%; padding:3rem 2rem;
@@ -353,20 +354,17 @@
     storyBtn.addEventListener('click', function() {
       var story = STORIES[Math.floor(Math.random() * STORIES.length)];
       tag.textContent = '퐁퐁이에게';
-      title.innerHTML = '<span style="display:block;opacity:0;animation:rxFadeIn .8s ease .3s forwards">꿍꿍이의 이야기</span>';
+      title.innerHTML = '꿍꿍이의 이야기';
       body.innerHTML = '';
-      story.paras.forEach(function(p, i) {
+      story.paras.forEach(function(p) {
         var el = document.createElement('p');
-        el.className = 'rx-paragraph';
+        el.style.cssText = 'margin-bottom:1.2rem;word-break:keep-all;font-size:.9rem;line-height:2;color:var(--text);font-weight:300;text-align:left;';
         el.textContent = p;
-        el.style.animationDelay = (0.5 + i * 0.08) + 's';
         body.appendChild(el);
       });
-      overlay.classList.add('open');
+      overlay.classList.add('open', 'story-mode');
       document.body.style.overflow = 'hidden';
-      card.style.animation = 'none';
-      card.offsetHeight;
-      card.style.animation = 'cardAppear 0.6s ease forwards';
+      setTimeout(function() { overlay.scrollTop = 0; }, 10);
     });
     grid.appendChild(storyBtn);
 
@@ -398,7 +396,7 @@
     }
 
     function closeRx() {
-      overlay.classList.remove('open');
+      overlay.classList.remove('open', 'story-mode');
       document.body.style.overflow = '';
       body.innerHTML = '';
       title.innerHTML = '';
