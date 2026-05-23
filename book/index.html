@@ -304,7 +304,7 @@
       { title:'야간 비행', author:'앙투안 드 생텍쥐페리', search:'야간 비행 생텍쥐페리', nationality:'프랑스', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'밤하늘을 나는 비행사의 용기와 사명을 그린 이야기.', isChoice:false },
       { title:'어린 왕자', author:'앙투안 드 생텍쥐페리', search:'어린 왕자 생텍쥐페리', nationality:'프랑스', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'가장 순수한 시선으로 바라본 삶과 사랑의 의미.', isChoice:false },
       { title:'오만과 편견', author:'제인 오스틴', search:'오만과 편견 제인 오스틴', nationality:'영국', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'편견을 넘어 진정한 사랑을 찾아가는 로맨스의 고전.', isChoice:false },
-      { title:'오셀로', author:'윌리엄 셰익스피어', search:'오셀로 셰익스피어', nationality:'영국', genre:'희곡', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'질투와 의심이 빚어낸 비극적 사랑 이야기.', isChoice:false },
+      { title:'오셀로', author:'윌리엄 셰익스피어', search:'오셀로 셰익스피어', aiQuery:'오셀로 윌리엄 셰익스피어 설명해줘, 오셀로 보드게임과의 연관성도', nationality:'영국', genre:'희곡', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'질투와 의심이 빚어낸 비극적 사랑 이야기.', isChoice:false },
       { title:'오즈의 마법사', author:'라이먼 프랭크 바움', search:'오즈의 마법사 라이먼 프랭크 바움', nationality:'미국', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'용기와 지혜를 찾아 오즈로 떠나는 모험.', isChoice:false },
       { title:'이상한 나라의 앨리스', author:'루이스 캐럴', search:'이상한 나라의 앨리스 루이스 캐럴', nationality:'영국', genre:'소설', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'토끼굴로 떠난 앨리스의 기묘하고 환상적인 모험.', isChoice:false },
       { title:'자기만의 방', author:'버지니아 울프', search:'자기만의 방 버지니아 울프', nationality:'영국', genre:'에세이', year:'', publisher:'', salesPoint:0, coverImg:'', summary:'여성이 글을 쓰기 위해 필요한 조건에 대한 에세이.', isChoice:false },
@@ -318,7 +318,7 @@
     }
 
     function googleAiUrl(book) {
-      var q = book.title + ' ' + book.author + ' 설명해줘';
+      var q = book.aiQuery || (book.title + ' ' + book.author + ' 설명해줘');
       return 'https://www.google.com/search?q=' + encodeURIComponent(q) + '&udm=50';
     }
 
